@@ -1,8 +1,8 @@
 import { HiMiniUser, HiPhoto } from "react-icons/hi2";
 import { CardLink } from "@/ui/components/cards/CardLink";
-import Sale from '../../presentation/assets/images/sale.svg';
-import Inventory from '../../presentation/assets/images/inventary.svg';
-import Contability from '../../presentation/assets/images/payCash.svg';
+import Sale from '../../ui/assets/images/sale.svg';
+import Inventory from '../../ui/assets/images/inventary.svg';
+import Contability from '../../ui/assets/images/payCash.svg';
 
 export const metadata = {
   title: 'Home'

@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { TextInput } from '../../../ui/components/inputs'
 import { Button } from '../../../ui/components/buttons'
 import { HiMiniArrowLongRight } from 'react-icons/hi2'
-import { createEstablishmentAction } from '@/features/establishment/actions/establishment.action'
+import { createEstablishmentAction } from '@/features/establishment/actions/create.establishment.action'
 import { useRouter } from 'next/navigation'
 import { Spinner } from '../../../ui/components/loadings/Spinner'
 import { FloatMessage } from '../../../ui/components/messages'
@@ -11,6 +11,9 @@ import { FloatMessageType } from '@/shared/ui/types/FloatMessageType'
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { ErrorEntity } from '@/shared/features/error.entity'
+import { EstablishmentEntity } from '../domain/entities/establishment.entity'
+import { Result } from '@/shared/features/result'
 
 const schema = yup.object({
     name: yup.string().required('El campo nombre es requerido').min(3, 'El valor debe ser mayor a 3 caracteres')
@@ -39,9 +42,15 @@ export const CreateEstablishmentForm = () => {
         let resp;
         if( !errors.name){
             resp = await createEstablishmentAction(data.name);
+        } else {
+            resp = Result.failure({
+                error: 'Hay un error',
+                message: 'Hay un error',
+                statusCode: 500,
+            } satisfies ErrorEntity);
         }
 
-        /*if (resp?) {
+        if (resp?.ok) {
             setIsLoading(false);
             setFloatMessageState(()=>({
                 description: 'Establecimiento creado correctamente',
@@ -50,15 +59,15 @@ export const CreateEstablishmentForm = () => {
                 type: 'blue'
             }));
             router.push('/')
-        } else if (resp?.code) {
+        } else {
             setIsLoading(false);
             setFloatMessageState(()=>({
-                description: resp.messageError,
+                description: resp?.error?.message,
                 summary: '¡Error!',
                 isActive: true,
                 type: 'red'
             }));            
-        }*/
+        }
 
     }
 

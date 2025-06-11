@@ -7,13 +7,13 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     color?: 'blue'|'green'|'yellow'|'red'|'gray'
 }
 
-export const Button = ({ children, color = 'blue' , ...props }: Props) => {
+export const RoundedButton = ({ children, color = 'blue' , ...props }: Props) => {
     return (
         <button
             className={
-                clsx(`transition-all text-xl flex w-full cursor-pointer justify-center items-center gap-4 rounded-md px-4 py-2 text-white shadow-sm bg-${color}-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600`,
+                clsx(`transition-all duration-300 cursor-pointer bg-${color}-500 text-white p-2 rounded-full flex items-center justify-center w-8 h-8`,
                     props.className,
-                    color && `hover:bg-${color}-300`,
+                    color && `hover:bg-${color}-400`,
                 )}
             {...props}   >
             { children }

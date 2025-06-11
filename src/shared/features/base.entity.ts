@@ -1,5 +1,5 @@
 export interface  BaseEntity{
     isActive?: boolean;
     createdAt?: Date;
-    pdatedAt?: Date;
+    updatedAt?: Date;
 }
