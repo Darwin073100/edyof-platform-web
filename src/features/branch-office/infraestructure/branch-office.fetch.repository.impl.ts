@@ -9,21 +9,20 @@ export class BranchOfficeFetchRepositoryImpl implements BranchOfficeRepository{
     async save(data: BranchOfficeInterface): Promise<Result<BranchOfficeInterface, ErrorEntity>> {
         let dataBody = {
             name: data.name,
-            establishmentId: 1,
+            establishmentId: data.establishmentId.toString(),
             street: data.street,
-            betweenStreets: data.betweenStreets,
-            interiorNumber: data.interiorNumber,
-            exteriorNumber: data.exteriorNumber,
+            country: data.country,
+            internalNumber: data.internalNumber,
+            externalNumber: data.externalNumber,
             postalCode: data.postalCode,
             neighborhood: data.neighborhood,
-            district: data.district,
+            municipality: data.municipality,
             city: data.city,
             state: data.state,
-            additionalReferences: data.additionalReferences
+            reference: data.reference
         }
         
-        if(!dataBody.additionalReferences)delete dataBody.additionalReferences;
-        if(!dataBody.betweenStreets)delete dataBody.betweenStreets;
+        if(!dataBody.reference)delete dataBody.reference;
     
 
         try {
@@ -45,12 +44,15 @@ export class BranchOfficeFetchRepositoryImpl implements BranchOfficeRepository{
             return Result.success(branchOffice);
 
         } catch (error: any) {
+
             console.log(error);
             
             return Result.failure({
                 error: error?.message || error,
                 message: 'No se pudo conectar al backend',
                 statusCode: 500,
+                path: `${process.env.PREFIX_EDYOF_PLATFORM_API}/branch-offices`,
+                timestamp: new Date().toDateString(),
             } satisfies ErrorEntity);
         }
     }

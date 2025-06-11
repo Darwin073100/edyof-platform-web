@@ -5,12 +5,12 @@ export interface BranchOfficeInterface extends BaseEntity{
     name: string;
     postalCode: string;
     street: string;
-    betweenStreets?: string;
-    interiorNumber: string;
-    exteriorNumber: string;
+    internalNumber: string;
+    externalNumber: string;
     neighborhood: string;
-    district: string;
+    municipality: string;
+    country: string;
     city: string;
     state: string;
-    additionalReferences?: string;
+    reference?: string;
 }

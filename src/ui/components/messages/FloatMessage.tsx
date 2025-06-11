@@ -5,7 +5,7 @@ import { IoClose } from "react-icons/io5"
 
 interface Props {
     summary?: string,
-    description?: string,
+    description?: string|string[],
     type?: 'blue' | 'green' | 'yellow' | 'red',
     isActive?: boolean,
 }

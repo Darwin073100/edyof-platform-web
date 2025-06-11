@@ -1,5 +1,5 @@
 export interface  BaseEntity{
-    isActive?: boolean;
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt?: Date,
+    updatedAt?: Date | null,
+    deletedAt?: Date | null,
 }

@@ -8,7 +8,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`antialiased bg-gray-100`}
+        className={`antialiased bg-gray-300`}
       >
           {children}
       </body>

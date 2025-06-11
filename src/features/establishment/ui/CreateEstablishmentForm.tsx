@@ -12,7 +12,6 @@ import * as yup from 'yup';
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { ErrorEntity } from '@/shared/features/error.entity'
-import { EstablishmentEntity } from '../domain/entities/establishment.entity'
 import { Result } from '@/shared/features/result'
 
 const schema = yup.object({
@@ -47,6 +46,8 @@ export const CreateEstablishmentForm = () => {
                 error: 'Hay un error',
                 message: 'Hay un error',
                 statusCode: 500,
+                path: '/this',
+                timestamp: new Date().toDateString()
             } satisfies ErrorEntity);
         }
 
@@ -54,11 +55,11 @@ export const CreateEstablishmentForm = () => {
             setIsLoading(false);
             setFloatMessageState(()=>({
                 description: 'Establecimiento creado correctamente',
-                // summary: '¡Correcto!',
+                summary: '¡Correcto!',
                 isActive: true,
                 type: 'blue'
             }));
-            router.push('/')
+            router.push('/create-first-branch-office')
         } else {
             setIsLoading(false);
             setFloatMessageState(()=>({
@@ -92,7 +93,7 @@ export const CreateEstablishmentForm = () => {
                 </Button>
             </form>
             <FloatMessage 
-                key={floatMessageState.description}
+                key={floatMessageState.summary}
                 description={floatMessageState.description}
                 summary={floatMessageState.summary}
                 type={ floatMessageState.type}

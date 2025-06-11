@@ -29,6 +29,8 @@ export class EstablishmentFetchRepositoryImpl implements EstablishmentRepository
                 error: error?.message || error,
                 message: 'No se pudo conectar al backend',
                 statusCode: 500,
+                path: `${process.env.PREFIX_EDYOF_PLATFORM_API}/establishments`,
+                timestamp: new Date().toDateString()
             } satisfies ErrorEntity);
         }
     }
