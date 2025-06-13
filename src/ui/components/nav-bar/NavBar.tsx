@@ -13,8 +13,8 @@ export const NavBar = () => {
             className="rounded-full"
             src={ Logo }
             alt="Next.js logo"
-            width={60}
-            height={60}
+            width={40}
+            height={40}
             priority
           />
         <h1 className='text-lg text-gray-700'>EdYOf Platform</h1>
