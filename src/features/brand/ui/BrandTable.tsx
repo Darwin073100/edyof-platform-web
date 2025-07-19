@@ -3,11 +3,11 @@ import { RoundedButton } from '@/ui/components/buttons/RoundedButton';
 import React from 'react'
 import { AiFillDelete } from 'react-icons/ai';
 import { MdEditSquare } from 'react-icons/md';
-import { useCategoryStore } from '../infraestructure/category.store';
+import { useBrandStore } from '../infraestructure/brand.store';
 
-const CategoriesTable = () => {
-    const { categories, setCategory } = useCategoryStore();
-  const head = ['Categoria', 'Descripción', 'Acciones'];
+const BrandTable = () => {
+    const { brands, setBrand } = useBrandStore();
+  const head = ['Marca', 'Acciones'];
       
       return (
           <div className='h-60 w-full overflow-auto'>
@@ -18,12 +18,11 @@ const CategoriesTable = () => {
                       </tr>
                   </thead>
                   <tbody className="border-y border-gray-300">
-                      {categories.map(item => (
-                          <tr className="bg-white border-b border-gray-200" key={item.categoryId}>
+                      {brands.map(item => (
+                          <tr className="bg-white border-b border-gray-200" key={item.brandId}>
                               <td className="px-6 py-4">{item.name}</td>
-                              <td className="px-6 py-4">{item.description}</td>
                               <td className="px-6 py-4 flex gap-2 items-center">
-                                  <RoundedButton color="yellow" onClick={()=> setCategory(item)}>
+                                  <RoundedButton color="yellow" onClick={()=> setBrand(item)}>
                                       <MdEditSquare />
                                   </RoundedButton>
                                   <RoundedButton color="red">
@@ -38,4 +37,4 @@ const CategoriesTable = () => {
       )
 }
 
-export default CategoriesTable
+export { BrandTable }

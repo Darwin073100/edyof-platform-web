@@ -1,29 +1,28 @@
 'use cient'
 import * as yup from 'yup';
 import { useEffect, useState } from "react";
-import { useCategoryStore } from "../infraestructure/category.store";
 import { FloatMessageType } from "@/shared/ui/types/FloatMessageType";
-import { CategoryEntity } from "../domain/entities/category.entity";
-import { RegisterCategoryDTO } from "../application/dtos/register-category.dto";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { registerCategoryAction } from '../actions/register-category.action';
 import { Result } from '@/shared/features/result';
 import { ErrorEntity } from '@/shared/features/error.entity';
+import { BrandEntity } from '../domain/entities/brand.entity';
+import { useBrandStore } from '../infraestructure/brand.store';
+import { RegisterBrandDTO } from '../application/dtos/register-brand.dto';
+import { registerBrandAction } from '../actions/register-brand.action';
 
 const schema = yup.object({
-    name: yup.string().required('El campo es obligatorio').min(3, 'La categoría debe tener al menos 3 caracteres.'),
-    description: yup.string().optional().notRequired().default('')
+    name: yup.string().required('El campo es obligatorio').min(3, 'La marca debe tener al menos 3 caracteres.'),
 }).required();
 
 type FormData = yup.InferType<typeof schema>;
 
 interface Props{
-    categoryList: CategoryEntity[]
+    brandList: BrandEntity[]
 }
 
-const useCategoryModal = ({ categoryList }: Props) => {
-    const { setCategories, addCategory, category, setCategory, modalOpen, setModalOpen } = useCategoryStore();
+const useBrandModal = ({ brandList }: Props) => {
+    const { setBrands, addBrand, brand, setBrand, modalOpen, setModalOpen } = useBrandStore();
     const [floatMessageState, setFloatMessageState] = useState<FloatMessageType>({});
     const [isLoading, setIsLoading] = useState(false);
 
@@ -33,7 +32,7 @@ const useCategoryModal = ({ categoryList }: Props) => {
     }
 
     useEffect(()=>{
-        setCategories(categoryList);
+        setBrands(brandList);
     },[]);
 
     const { register, handleSubmit, reset, clearErrors, formState: { errors } } = useForm({
@@ -42,32 +41,30 @@ const useCategoryModal = ({ categoryList }: Props) => {
     });
 
     const resetForm = ()=>{
-        setCategory(null)
+        setBrand(null)
         reset({});
-        clearErrors(['description', 'name'])
+        clearErrors(['name'])
     }
 
     useEffect(()=>{
-        if(!!category){
+        if(!!brand){
             reset({
-                name: category.name,
-                description: category.description
+                name: brand.name
             })
         } else {
             resetForm()
         }
-    },[category, reset]);
+    },[brand, reset]);
 
     const onSubmit = async (data: FormData) => {
         setFloatMessageState(() => ({}));
         setIsLoading(true);
-        let result;
+        let result:any;
         if (!errors.name) {
-            const newCategory: RegisterCategoryDTO = {
-                name: data.name,
-                description: data.description,
+            const newCategory: RegisterBrandDTO = {
+                name: data.name
             }
-            result = await registerCategoryAction(newCategory);
+            result = await registerBrandAction(newCategory);
         } else {
             result = Result.failure({
                 error: 'Hay un error',
@@ -81,12 +78,12 @@ const useCategoryModal = ({ categoryList }: Props) => {
         if (result?.ok) {
             setIsLoading(false);
             if(result.value){
-                addCategory(result.value)
+                addBrand(result.value)
             }
 
             resetForm();
             setFloatMessageState(()=>({
-                description: 'Categoría creada correctamente',
+                description: 'Marca creada correctamente',
                 summary: '¡Correcto!',
                 isActive: true,
                 type: 'blue'
@@ -112,10 +109,10 @@ const useCategoryModal = ({ categoryList }: Props) => {
     }
     
     return {
-        setCategories,
-        addCategory,
-        category, 
-        setCategory,
+        setBrands,
+        addBrand,
+        brand, 
+        setBrand,
         floatMessageState,
         setFloatMessageState,
         isLoading,
@@ -131,4 +128,4 @@ const useCategoryModal = ({ categoryList }: Props) => {
     }
 }
 
-export { useCategoryModal };
+export { useBrandModal };

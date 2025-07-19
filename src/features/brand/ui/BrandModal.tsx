@@ -8,31 +8,31 @@ import { IoClose } from 'react-icons/io5';
 import { FloatMessage } from '@/ui/components/messages';
 import { HiSave } from 'react-icons/hi';
 import { Spinner } from '@/ui/components/loadings/Spinner';
-import { CategoryEntity } from '../domain/entities/category.entity';
-import CategoriesTable from './CategoriesTable';
+import { BrandTable } from './BrandTable';
 import { MdCleaningServices } from 'react-icons/md';
-import { useCategoryModal } from '../hooks/useCategoryModal';
+import { BrandEntity } from '../domain/entities/brand.entity';
+import { useBrandModal } from '../hooks/useBrandModal';
 
 interface Props{
-    categoryList: CategoryEntity[]
+    brandList: BrandEntity[]
 }
 
-const CategoryModal = ({ categoryList }: Props) => {
+const BrandModal = ({ brandList }: Props) => {
     const { 
         modalOpen, setModalOpen,
         floatMessageState, isLoading, 
         handleOpenModal, handleSubmit, register,
         onSubmit, resetForm,errors,
-    } = useCategoryModal({categoryList});
+    } = useBrandModal({brandList});
     
     
 
     return (
         <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
-            <div className='w-[500px] text-gray-700 flex flex-col items-center gap-2 bg-white p-4 rounded-md'>
+            <div className='w-[450px] text-gray-700 flex flex-col items-center gap-2 bg-white p-4 rounded-md'>
                 <form onSubmit={handleSubmit(onSubmit)} className="w-full text-gray-700 flex flex-col items-center gap-2 bg-white p-4">
                     <div className="w-full flex justify-between items-center gap-2">
-                        <h2 className="text-lg font-semibold">Categorías de productos</h2>
+                        <h2 className="text-lg font-semibold">Marcas de productos</h2>
                         <RoundedButton color="red" onClick={() => handleOpenModal()}><IoClose /></RoundedButton>
                     </div>
                     <div className="w-full flex flex-col gap-2">
@@ -41,11 +41,6 @@ const CategoryModal = ({ categoryList }: Props) => {
                             error={!!errors.name}
                             errorMessage={errors.name?.message}
                             placeholder="Nombre de la categoría" />
-                        <TextInput
-                            {...register('description')}
-                            error={!!errors.description}
-                            errorMessage={errors.description?.message}
-                            placeholder="Descripción de la categoría" />
                     </div>
                     <div className="w-full flex justify-end gap-2">
                         <Button className='w-32 flex justify-center items-center'>
@@ -55,7 +50,7 @@ const CategoryModal = ({ categoryList }: Props) => {
                         <Button color="gray" onClick={() => handleOpenModal()}><IoClose />Cerrar</Button>
                     </div>
                 </form>
-                <CategoriesTable/>
+                <BrandTable/>
             </div>
             <FloatMessage
                 key={floatMessageState.summary}
@@ -67,4 +62,4 @@ const CategoryModal = ({ categoryList }: Props) => {
     )
 }
 
-export { CategoryModal };
+export { BrandModal };
