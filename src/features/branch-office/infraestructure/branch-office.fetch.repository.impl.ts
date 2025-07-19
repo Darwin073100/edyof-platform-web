@@ -1,3 +1,4 @@
+"use server"
 import { ErrorEntity } from "@/shared/features/error.entity";
 import { Result } from "@/shared/features/result";
 import { BranchOfficeInterface } from "../domain/entities/branch-office.interface";
@@ -49,7 +50,7 @@ export class BranchOfficeFetchRepositoryImpl implements BranchOfficeRepository{
             
             return Result.failure({
                 error: error?.message || error,
-                message: 'No se pudo conectar al backend',
+                message: 'No se pudo conectar al servidor',
                 statusCode: 500,
                 path: `${process.env.PREFIX_EDYOF_PLATFORM_API}/branch-offices`,
                 timestamp: new Date().toDateString(),

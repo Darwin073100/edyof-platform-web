@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import React from 'react'
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
-    children: React.ReactElement[],
+    children?: any,
 }
 
 export const TemplateArea = ({ children, ...props }:Props ) => {

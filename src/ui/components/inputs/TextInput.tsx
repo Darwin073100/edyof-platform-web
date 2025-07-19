@@ -1,7 +1,7 @@
 import clsx from "clsx"
 
 interface Props extends React.InputHTMLAttributes<HTMLInputElement>{
-    type?: 'text'|'password'|'email'|'tel'|'url'|'search'|'number',
+    type?: 'text'|'password'|'email'|'tel'|'url'|'search'|'number'|'date',
     error?: boolean,
     errorMessage?: string,
 }

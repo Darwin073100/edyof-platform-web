@@ -21,7 +21,7 @@ export const SelectMenu = ({ error = false, items ,...props }: Props) => {
                             error && 'outline-red-600 focus:outline-red-600'
                         )
                     }>
-            <option value="value0" selected>Selecciona una rol</option>
+            <option value="value0" selected>Selecciona una opción</option>
             { items?.map(option => (
                 <option key={ option.value } value={option.value}> { option.text } </option>
             ))}

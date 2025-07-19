@@ -1,4 +1,4 @@
-import { ProductEntity } from "./product.entity";
+import { ProductEntity } from "../../../product/domain/entities/product.entity";
 
 export interface LotEntity {
   lotId              : bigint;

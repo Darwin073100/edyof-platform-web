@@ -1,6 +1,6 @@
 import { LocationEnum } from "../enums/location.enum";
 import { LotEntity } from "./lot.entity";
-import { ProductEntity } from "./product.entity";
+import { ProductEntity } from "../../../product/domain/entities/product.entity";
 
 export interface InventoryItemEntity{
     inventoryItemId      : bigint,
@@ -16,6 +16,8 @@ export interface InventoryItemEntity{
     internalBarCode?     : string | null,
     salePriceOne?        : number | null,
     salePriceMany?       : number | null,
+    saleQuantityMany?    : number | null,
+    salePriceSpecial?    : number | null,
     minStockBranch?      : number | null,
     maxStockBranch?      : number | null,
     updatedAt?           : Date|null,
