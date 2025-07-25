@@ -17,7 +17,7 @@ export const NavBar = () => {
             height={40}
             priority
           />
-        <h1 className='text-lg text-gray-700'>EdYOf Platform</h1>
+        <h1 className='text-lg max-sm:hidden text-gray-700'>EdYOf Platform</h1>
       </div>
         <div className="flex items-center justify-center gap-4 text-gray-700">
             <RoundedButton color='blue'>
@@ -27,7 +27,7 @@ export const NavBar = () => {
           <RoundedBadge color='gray'>
             <IoPeopleOutline/>
           </RoundedBadge>
-          <span>Edwin</span>
+          <span className='max-sm:hidden'>Edwin</span>
           <RoundedButton color='red'>
             <IoChevronDownSharp />
           </RoundedButton>

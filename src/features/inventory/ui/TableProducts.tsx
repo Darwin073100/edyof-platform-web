@@ -4,7 +4,7 @@ import { AiFillDelete } from "react-icons/ai";
 import { MdEditSquare } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { ProductEntity } from "@/features/product/domain/entities/product.entity";
-import { useProductStore } from "@/features/product/infraestructure/product.store";
+import { useProductStore } from "@/features/product/infraestructure/stores/product.store";
 
 interface TableProductProps {
     productList: ProductEntity[];
@@ -14,14 +14,14 @@ export function TableProduct({ productList }: TableProductProps) {
     const { setProducts, products } = useProductStore();
     console.log(products);
     // Inicializamos la data del storage
-    useEffect(()=>{
-        if(products.length === 0){
+    useEffect(() => {
+        if (products.length === 0) {
             setProducts(productList);
         }
-    },[]);
+    }, []);
 
-    const head = ['Cod. Bar. Uni.', 'Nombre', 'Stock', 'Ubi.', 'P. C.', 'P. U.', 'P. M.','Categ.', 'Acciones'];
-    
+    const head = ['Cod. Bar. Uni.', 'Nombre', 'Stock', 'Ubi.', 'P. C.', 'P. U.', 'P. M.', 'Categ.', 'Acciones'];
+
     return (
         <div>
             <table className="w-full text-sm text-left rtl:text-right text-gray-700">
@@ -31,18 +31,18 @@ export function TableProduct({ productList }: TableProductProps) {
                     </tr>
                 </thead>
                 <tbody className="border-y border-gray-300">
-                    {products.map(item => (
+                    {products.filter(item=>!item.deletedAt).map(item => (
                         <tr className="bg-white border-b border-gray-200" key={item.productId}>
                             <td className="px-6 py-4">{item.universalBarCode}</td>
                             <td className="px-6 py-4">{item.name}</td>
-                            <td className="px-6 py-4">{}</td>
-                            <td className="px-6 py-4">{}</td>
-                            <td className="px-6 py-4">${}</td>
-                            <td className="px-6 py-4">${}</td>
-                            <td className="px-6 py-4">${}</td>
+                            <td className="px-6 py-4">{ }</td>
+                            <td className="px-6 py-4">{ }</td>
+                            <td className="px-6 py-4">${ }</td>
+                            <td className="px-6 py-4">${ }</td>
+                            <td className="px-6 py-4">${ }</td>
                             <td className="px-6 py-4">{item.category?.name}</td>
                             <td className="px-6 py-4 flex gap-2 items-center">
-                                <RoundedButton color="yellow" onClick={()=> alert(item.name)}>
+                                <RoundedButton color="yellow" onClick={() => alert(item.name)}>
                                     <MdEditSquare />
                                 </RoundedButton>
                                 <RoundedButton color="red">
@@ -50,7 +50,8 @@ export function TableProduct({ productList }: TableProductProps) {
                                 </RoundedButton>
                             </td>
                         </tr>
-                    ))}
+                    ))
+                    }
                 </tbody>
             </table>
         </div>

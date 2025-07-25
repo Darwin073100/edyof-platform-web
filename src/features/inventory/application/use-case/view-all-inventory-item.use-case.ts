@@ -1,4 +1,4 @@
-import { InventoryItemRepository } from "../domain/inventory-item.repository";
+import { InventoryItemRepository } from "../../domain/repositories/inventory-item.repository";
 
 export class ViewAllInventoryItemUseCase{
     constructor(

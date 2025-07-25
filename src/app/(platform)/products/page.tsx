@@ -13,6 +13,8 @@ import { viewAllProductsAction } from "@/features/product/actions/view-all-produ
 import { ViewAllCategoriesAction } from "@/features/category/actions/view-all-categories.action";
 import { viewAllBrandsAction } from "@/features/brand/actions/view-all-brands.action";
 import { BrandModal } from "@/features/brand/ui/BrandModal";
+import { SeasonModal } from "@/features/season/ui/SeasonModal";
+import { viewAllSeasonsAction } from "@/features/season/actions/view-all-seasons.action";
 
 export const metadata:Metadata = {
     title: 'Productos'
@@ -27,6 +29,9 @@ export default async function ProductsPage() {
     const categories = viewAllCategories.ok ? viewAllCategories.value?.categories ?? [] : [];
     const viewAllBrands = await viewAllBrandsAction();
     const brandItems = viewAllBrands.ok ? viewAllBrands.value?.brands ?? [] : [];
+    const viewAllSeasons = await viewAllSeasonsAction();
+    const seasonItems = viewAllSeasons.ok ? viewAllSeasons.value?.seasons ?? [] : [];
+    
 
     return (
         <main className="flex flex-col gap-4 w-full">
@@ -36,11 +41,13 @@ export default async function ProductsPage() {
             <TableProduct 
                 productList={items}/>
             <CategoryModal
-                categoryList={categories}
+                categoryList={ categories }
             />
             <BrandModal 
-                brandList={ brandItems}
+                brandList={ brandItems }
             />
+            <SeasonModal
+                seasonList={ seasonItems }/>
         </main>
     );
 }

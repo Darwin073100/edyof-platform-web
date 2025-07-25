@@ -69,7 +69,7 @@ export default function () {
                         </div>
                     </div>
                 </div>
-                <Modal id="modal" isOpen={isOpenModal}>
+                {/* <Modal isOpen={isOpenModal}>
                     <div className="flex w-full h-full justify-center items-center">
                         <form className="bg-white w-[700px] rounded-2xl shadow-md p-8 flex flex-col gap-4">
                             <div>
@@ -111,7 +111,7 @@ export default function () {
                             <Button color="blue">Guardar</Button>
                         </form>
                     </div>
-                </Modal>
+                </Modal> */}
             </div>
         </>
     );

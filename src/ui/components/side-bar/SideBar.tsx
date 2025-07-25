@@ -18,7 +18,7 @@ export const SideBar = () => {
 
     return (
     <form 
-        className="transition-all duration-300 flex flex-col gap-4 px-4 text-gray-700">
+        className="max-sm:hidden transition-all duration-300 flex flex-col gap-4 px-4 text-gray-700">
         <SideLink hover={hover} Icon={HiHome} href='/' value='Home'/>
         <SideLink hover={hover} Icon={HiMiniShoppingCart} href='/sale' value='Ventas'/>
         <SideLink hover={hover} Icon={HiMiniShoppingBag} href='#' value='Clientes'/>

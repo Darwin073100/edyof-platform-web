@@ -1,7 +1,7 @@
 import { SeasonEntity } from "@/features/season/domain/entities/season.entity";
 import { CategoryEntity } from "../../../category/domain/entities/category.entity";
 import { BrandEntity } from "@/features/brand/domain/entities/brand.entity";
-import { LotEntity } from "../../../inventory/domain/entities/lot.entity";
+import { LotEntity } from "../../../lot/domain/entities/lot.entity";
 import { InventoryItemEntity } from "../../../inventory/domain/entities/inventory.entity";
 
 export interface ProductEntity {

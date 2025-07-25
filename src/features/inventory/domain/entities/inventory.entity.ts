@@ -1,5 +1,5 @@
 import { LocationEnum } from "../enums/location.enum";
-import { LotEntity } from "./lot.entity";
+import { LotEntity } from "../../../lot/domain/entities/lot.entity";
 import { ProductEntity } from "../../../product/domain/entities/product.entity";
 
 export interface InventoryItemEntity{
@@ -8,7 +8,7 @@ export interface InventoryItemEntity{
     lotId                : bigint,
     branchOfficeId       : bigint,
     location             : LocationEnum,
-    quantityOnHan        : number,
+    quantityOnHand        : number,
     lastStockedAt        : Date,
     isSellable           : boolean,
     purchasePriceAtStock : number,

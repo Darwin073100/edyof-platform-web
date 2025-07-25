@@ -1,5 +1,5 @@
 "use server"
-import { ViewAllInventoryItemUseCase } from "../application/view-all-inventory-item.use-case";
+import { ViewAllInventoryItemUseCase } from "../application/use-case/view-all-inventory-item.use-case";
 import { InventoryItemFetchRepositoryImpl } from "../infraestructura/inventory-item.fetch.repository.impl"
 
 export async function viewAllInventoryItem(){

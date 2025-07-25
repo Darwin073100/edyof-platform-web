@@ -9,9 +9,9 @@ import { FloatMessage } from '@/ui/components/messages';
 import { HiSave } from 'react-icons/hi';
 import { Spinner } from '@/ui/components/loadings/Spinner';
 import { CategoryEntity } from '../domain/entities/category.entity';
-import CategoriesTable from './CategoriesTable';
 import { MdCleaningServices } from 'react-icons/md';
 import { useCategoryModal } from '../hooks/useCategoryModal';
+import { CategoryTable } from './CategoryTable';
 
 interface Props{
     categoryList: CategoryEntity[]
@@ -30,7 +30,7 @@ const CategoryModal = ({ categoryList }: Props) => {
     return (
         <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
             <div className='w-[500px] text-gray-700 flex flex-col items-center gap-2 bg-white p-4 rounded-md'>
-                <form onSubmit={handleSubmit(onSubmit)} className="w-full text-gray-700 flex flex-col items-center gap-2 bg-white p-4">
+                <form onSubmit={handleSubmit(onSubmit, (errors) => { console.log('Errores de validación', errors); })} className="w-full text-gray-700 flex flex-col items-center gap-2 bg-white p-4">
                     <div className="w-full flex justify-between items-center gap-2">
                         <h2 className="text-lg font-semibold">Categorías de productos</h2>
                         <RoundedButton color="red" onClick={() => handleOpenModal()}><IoClose /></RoundedButton>
@@ -55,7 +55,7 @@ const CategoryModal = ({ categoryList }: Props) => {
                         <Button color="gray" onClick={() => handleOpenModal()}><IoClose />Cerrar</Button>
                     </div>
                 </form>
-                <CategoriesTable/>
+                <CategoryTable/>
             </div>
             <FloatMessage
                 key={floatMessageState.summary}

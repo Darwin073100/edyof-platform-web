@@ -15,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-gray-200">
+      <body className="antialiased bg-gray-200">
         <NavBar/>
         <main className="flex w-full py-4 pr-4">
           <SideBar />

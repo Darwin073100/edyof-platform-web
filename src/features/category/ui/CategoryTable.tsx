@@ -5,7 +5,7 @@ import { AiFillDelete } from 'react-icons/ai';
 import { MdEditSquare } from 'react-icons/md';
 import { useCategoryStore } from '../infraestructure/category.store';
 
-const CategoriesTable = () => {
+const CategoryTable = () => {
     const { categories, setCategory } = useCategoryStore();
   const head = ['Categoria', 'Descripción', 'Acciones'];
       
@@ -38,4 +38,4 @@ const CategoriesTable = () => {
       )
 }
 
-export default CategoriesTable
+export { CategoryTable };

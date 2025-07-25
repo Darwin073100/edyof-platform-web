@@ -1,7 +1,8 @@
 import { ErrorEntity } from "@/shared/features/error.entity";
 import { Result } from "@/shared/features/result";
 import { InventoryItemEntity } from "../domain/entities/inventory.entity";
-import { InventoryItemRepository } from "../domain/inventory-item.repository";
+import { InventoryItemRepository } from "../domain/repositories/inventory-item.repository";
+import { RegisterInventoryItemDTO } from "../application/dtos/register-inventory-item.dto";
 
 export class InventoryItemFetchRepositoryImpl implements InventoryItemRepository {
     private readonly URL = `${process.env.URL_EDYOF_PLATFORM_API}${process.env.PREFIX_EDYOF_PLATFORM_API}/inventory-items`;
@@ -21,6 +22,36 @@ export class InventoryItemFetchRepositoryImpl implements InventoryItemRepository
             return Result.success(inventory);
 
         } catch (error: any) {
+            return Result.failure({
+                error: error?.message || error,
+                message: 'No se pudo conectar al servidor: inventory',
+                statusCode: 500,
+                path: `${process.env.PREFIX_EDYOF_PLATFORM_API}/inventory-items`,
+                timestamp: new Date().toDateString()
+            } satisfies ErrorEntity);
+        }
+    }
+
+    async save(dto: RegisterInventoryItemDTO): Promise<Result<InventoryItemEntity, ErrorEntity>> {
+        try {
+            const response = await fetch(`${this.URL}`,{
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dto)
+            });
+
+            if (!response.ok) {
+                const error = await response.json() as ErrorEntity;
+                return Result.failure(error);
+            }
+
+            const inventory = await response.json() as InventoryItemEntity;
+            return Result.success(inventory);
+
+        } catch (error: any) {
+            console.log(error);
             return Result.failure({
                 error: error?.message || error,
                 message: 'No se pudo conectar al backend',

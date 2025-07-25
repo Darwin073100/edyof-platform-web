@@ -1,8 +1,8 @@
 export interface RegisterProductDTO {
-    establishmentId: bigint;
-    categoryId: bigint;
-    brandId?: bigint | null;
-    seasonId?: bigint | null;
+    establishmentId: string;
+    categoryId: string;
+    brandId?:  string | null;
+    seasonId?:  string| null;
     name: string;
     sku?: string | null;
     universalBarCode?: string | null;

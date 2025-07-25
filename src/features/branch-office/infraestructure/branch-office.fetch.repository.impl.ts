@@ -1,4 +1,3 @@
-"use server"
 import { ErrorEntity } from "@/shared/features/error.entity";
 import { Result } from "@/shared/features/result";
 import { BranchOfficeInterface } from "../domain/entities/branch-office.interface";

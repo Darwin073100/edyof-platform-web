@@ -1,6 +1,6 @@
 'use server'
 import { ViewAllProductsUseCase } from "../application/use-case/view-all-products.use-case";
-import { ProductFetchRepositoryImpl } from "../infraestructure/product-fetch-repository.impl";
+import { ProductFetchRepositoryImpl } from "../infraestructure/repositories/product-fetch-repository.impl";
 
 export async function viewAllProductsAction(){
     const productFetchRepositoryImpl = new ProductFetchRepositoryImpl();

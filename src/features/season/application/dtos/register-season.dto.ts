@@ -1,6 +1,6 @@
 export interface RegisterSeasonDTO{
     name: string,
     description: string | null,
-    dateInit: Date,
-    dateFinish: Date,
+    dateInit: Date |string |null,
+    dateFinish: Date | string |null,
 }
