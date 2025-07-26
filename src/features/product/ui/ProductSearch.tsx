@@ -1,16 +1,17 @@
-import { Button } from '@/ui/components/buttons';
+'use client'
 import { TextInput } from '@/ui/components/inputs';
 import React from 'react'
-import { FaSearch } from 'react-icons/fa';
+import { useProductStore } from '../infraestructure/stores/product.store';
 
 function ProductSearch() {
+  const { setSearchCharacter } = useProductStore();
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchCharacter(event.target.value);
+  };
   return (
-    <div className="flex gap-2">
-        <Button className="w-10">
-            <FaSearch/>
-        </Button>
-        <TextInput placeholder="Buscar producto" />
-    </div>
+    <form className="flex gap-2"  onSubmit={(e) => e.preventDefault()}>
+        <TextInput placeholder="Buscar producto" onChange={handleSearchChange} />
+    </form>
   )
 }
 

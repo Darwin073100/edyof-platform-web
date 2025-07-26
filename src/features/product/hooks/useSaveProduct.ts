@@ -31,13 +31,19 @@ const schema = yup.object({
     // Lot
     lotNumber: yup.string().default(`LOT-${new Date().getTime()}`),
     purchasePrice: yup.number().positive('El precio debe ser un número positivo').required('El precio de compra es requerido.').typeError('Asegurate de ingresar la información correcta.'),
-    initialQuantity: yup.number().positive('La cantidad de producto inicial es obligatoria.'),
-    expirationDate: yup.date().optional().notRequired().nullable(),
-    manufacturingDate: yup.date().optional().notRequired().nullable(),
-    receivedDate: yup.date().required('La fecha de entrada del producto es requerida.'),
+    initialQuantity: yup.number().positive('La cantidad de producto inicial es obligatoria.').typeError('Asegurate de ingresar la información correcta.'),
+    expirationDate: yup.date()
+            .transform((value, originalValue) => originalValue === '' ? null : value)
+            .optional().notRequired().nullable(),
+    manufacturingDate: yup.date()
+            .transform((value, originalValue) => originalValue === '' ? null : value)
+            .optional().notRequired().nullable(),
+    receivedDate: yup.date()
+            .required('La fecha de entrada del producto es requerida.')
+            .transform((value, originalValue)=> originalValue === ''? null: value),
     // Inventory
     location: yup.string().required('La ubicacion del producto es obligatorio.'),
-    quantityOnHan: yup.number().required('El stock para la ubicación asignada es obligatorio.').positive('La cantidad debe ser positiva.').typeError('Asegurate de ingresar la información correcta.'),
+    // quantityOnHan: yup.number().required('El stock para la ubicación asignada es obligatorio.').positive('La cantidad debe ser positiva.').typeError('Asegurate de ingresar la información correcta.'),
     lastStockedAt: yup.date().required().default(() => new Date()),
     isSellable: yup.boolean(),
     purchasePriceAtStock: yup.number().typeError('Asegurate de ingresar la información correcta.'),
@@ -60,7 +66,7 @@ const useSaveProduct = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { product, setProduct } = useProductStore();
 
-    const { register, handleSubmit, reset, clearErrors, formState: { errors } } = useForm({
+    const { register, handleSubmit, reset, setValue, watch, clearErrors, formState: { errors } } = useForm({
         resolver: yupResolver(schema),
         mode: 'onChange',
         defaultValues:{
@@ -77,21 +83,23 @@ const useSaveProduct = () => {
         });
     }, [reset]);
 
+    const universalBarCode = watch('universalBarCode');
+    const handleBarCodeMatch = ()=>{
+        setValue('internalBarCode', universalBarCode || '');
+    }
+
     const resetFormProduct = () => {
         setProduct(null);
         reset({});
         clearErrors(['brandId', 'categoryId', 'seasonId','brandId', 'unitOfMeasure', 'minStockGlobal', 
             'universalBarCode', 'imageUrl', 'name', 'description', 'purchasePrice', 'receivedDate', 
-            'location', 'quantityOnHan', 'internalBarCode', 'salePriceOne', 'salePriceMany', 'salePriceSpecial', 
+            'location', 'internalBarCode', 'salePriceOne', 'salePriceMany', 'salePriceSpecial', 
             'saleQuantityMany', 'minStockBranch', 'maxStockBranch']);
     }
 
     const onSubmit = async (data: FormData) => {
         setFloatMessageState(() => ({}));
         setIsLoading(true);
-
-        // Log de los datos del formulario
-        console.log('[useSaveProduct] FormData recibido:', data);
 
         let productResult;
 
@@ -117,7 +125,7 @@ const useSaveProduct = () => {
             lastStockedAt: data.lastStockedAt,
             location: data.location as unknown as LocationEnum,
             purchasePriceAtStock: data.purchasePriceAtStock ?? 0,
-            quantityOnHand: data.quantityOnHan,
+            quantityOnHand: data.initialQuantity ?? 0,
             internalBarCode: data.internalBarCode,
             maxStockBranch: data.maxStockBranch,
             minStockBranch: data.minStockBranch,
@@ -127,12 +135,7 @@ const useSaveProduct = () => {
             saleQuantityMany: data.saleQuantityMany,
         }
 
-        // Log del DTO antes de enviar
-        console.log('[useSaveProduct] DTO a enviar:', newProduct);
-
         productResult = await registerInitialProductAction(newProduct);
-        // Log de la respuesta del backend
-        console.log('[useSaveProduct] Respuesta del backend:', productResult);
 
         if (productResult.ok) {
             setIsLoading(false);
@@ -171,6 +174,7 @@ const useSaveProduct = () => {
         handleSubmit,
         register,
         errors,
+        handleBarCodeMatch
     }
 }
 

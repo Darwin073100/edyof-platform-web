@@ -26,7 +26,7 @@ interface Props {
 const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
     const {
         errors, floatMessageState, handleSubmit, isLoading,
-        onSubmit, register
+        onSubmit, register, handleBarCodeMatch
     } = useSaveProduct();
 
     const { categories, setCategories } = useCategoryStore();
@@ -192,7 +192,7 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                     <div className="mb-2">
                         <div className="flex gap-2 mb-2">
                             <LabelInput value="Código de barras interno" />
-                            <Button size="sm" color="yellow"><TbExchange />User código universal</Button>
+                            <Button type='button' size="sm" color="yellow" onClick={()=> handleBarCodeMatch()}><TbExchange />User código universal</Button>
                         </div>
                         <TextInput
                             {...register('internalBarCode')}
@@ -248,7 +248,7 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                             items={locationOptions}
                         />
                     </div>
-                    <div className="mb-2">
+                    {/* <div className="mb-2">
                         <div className="flex gap-2 mb-2">
                             <LabelInput value="Stock para la ubicacion actual." />
                             <Button size="sm" color="yellow"><TbExchange />Todo el stock para esta ubicacion.</Button>
@@ -259,7 +259,7 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                             errorMessage={errors.quantityOnHan?.message}
                             type='number'
                             placeholder="Stock en ubicación" />
-                    </div>
+                    </div> */}
                     <div className="mb-2">
                         <LabelInput value="Stock mínimo en esta sucursal" />
                         <TextInput

@@ -23,7 +23,7 @@ const SeasonTable = () => {
                               <td className="px-6 py-4">{item.name}</td>
                               <td className="px-6 py-4">{item.description}</td>
                               <td className="px-6 py-4">{`${item.dateInit}`}</td>
-                              <td className="px-6 py-4">{item.dateFinish.toString()}</td>
+                              <td className="px-6 py-4">{`${item.dateFinish}`}</td>
                               <td className="px-6 py-4 flex gap-2 items-center">
                                   <RoundedButton color="yellow" onClick={()=> setSeason(item)}>
                                       <MdEditSquare />

@@ -14,8 +14,12 @@ import { registerSeasonAction } from '../actions/register-season.action';
 const schema = yup.object({
     name: yup.string().required('El campo es obligatorio').min(3, 'La categoría debe tener al menos 3 caracteres.'),
     description: yup.string().optional().notRequired().default(''),
-    dateInit: yup.date().optional().notRequired(),
-    dateFinish: yup.date().optional().notRequired()
+    dateInit: yup.date()
+        .transform((value, originalValue) => originalValue === '' ? null : value)
+        .optional().notRequired().nullable(),
+    dateFinish: yup.date()
+        .transform((value, originalValue) => originalValue === '' ? null : value)
+        .optional().notRequired().nullable()
 }).required();
 
 type FormData = yup.InferType<typeof schema>;
@@ -41,6 +45,10 @@ const useSeasonModal = ({ seasonList }: Props) => {
     const { register, handleSubmit, reset, clearErrors, formState: { errors } } = useForm({
         resolver: yupResolver(schema),
         mode: 'onChange',
+        defaultValues:{
+            dateFinish: new Date(),
+            dateInit: new Date(),
+        }
     });
 
     const resetForm = ()=>{

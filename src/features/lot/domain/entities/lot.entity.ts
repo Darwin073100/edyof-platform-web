@@ -1,3 +1,4 @@
+import { InventoryItemEntity } from "@/features/inventory/domain/entities/inventory.entity";
 import { ProductEntity } from "../../../product/domain/entities/product.entity";
 
 export interface LotEntity {
@@ -10,6 +11,7 @@ export interface LotEntity {
   manufacturingDate? : Date | null;
   product?           : ProductEntity | null;
   receivedDate       : Date;
+  inventoryItems     : InventoryItemEntity[];
   createdAt          : Date;
   updatedAt?         : Date | null;
   deletedAt?         : Date | null;

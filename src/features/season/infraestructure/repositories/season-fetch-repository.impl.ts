@@ -1,8 +1,9 @@
 import { Result } from "@/shared/features/result";
-import { SeasonEntity } from "../domain/entities/season.entity";
-import { SeasonRepository } from "../domain/repositories/season.repository";
+import { SeasonEntity } from "../../domain/entities/season.entity";
+import { SeasonRepository } from "../../domain/repositories/season.repository";
 import { ErrorEntity } from "@/shared/features/error.entity";
-import { RegisterSeasonDTO } from "../application/dtos/register-season.dto";
+import { RegisterSeasonDTO } from "../../application/dtos/register-season.dto";
+import { SeasonMapper } from "../mappers/season.mapper";
 
 export class SeasonFetchRepositoryImpl implements SeasonRepository{
     
@@ -10,12 +11,13 @@ export class SeasonFetchRepositoryImpl implements SeasonRepository{
 
     async save(dto: RegisterSeasonDTO): Promise<Result<SeasonEntity, ErrorEntity>> {
         try {
+            const dtoHttp = SeasonMapper.toHttpDto(dto);
             const result = await fetch(`${this.URL}`,{
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(dto),
+                body: JSON.stringify(dtoHttp),
             });
             if(!result.ok){
                 const error = await result.json() as ErrorEntity;
