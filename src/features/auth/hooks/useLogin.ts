@@ -2,9 +2,9 @@ import { FloatMessageType } from '@/shared/ui/types/FloatMessageType';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import * as yup from 'yup';
-import { AuthLoginDTO } from '../application/dtos/auth.login.dto';
-import { authLoginAction } from '../actions/auth-login.action';
+import { useAuth } from '@/hooks/useAuth';
 
 const schema = yup.object({
     email: yup.string().email('El formato del correo no es correcto').required('El correo es obligatorio.').min(3, 'El correo debe tener al menos 3 caracteres.'),
@@ -16,7 +16,8 @@ type FormData = yup.InferType<typeof schema>;
 function useLogin() {
     const [floatMessageState, setFloatMessageState] = useState<FloatMessageType>({});
     const [isLoading, setIsLoading] = useState(false);
-    // const { product, setProduct } = useProductStore();
+    const { login } = useAuth();
+    const router = useRouter();
 
     const { register, handleSubmit, reset, setValue, watch, clearErrors, formState: { errors } } = useForm({
         resolver: yupResolver(schema),
@@ -28,7 +29,6 @@ function useLogin() {
     });
 
     const resetFormLogin = () => {
-        // setProduct(null);
         reset({});
         clearErrors(['email', 'password']);
     }
@@ -37,32 +37,40 @@ function useLogin() {
         setFloatMessageState(() => ({}));
         setIsLoading(true);
 
-        let authLoginResponse;
+        try {
+            // Usar el nuevo hook de autenticación con NextAuth
+            const result = await login(data.email, data.password);
 
-        const authLogin: AuthLoginDTO = {
-           email: data.email,
-           password: data.password,
-        }
-
-        authLoginResponse = await authLoginAction(authLogin);
-
-        if (authLoginResponse.ok) {
+            if (result.success) {
+                setIsLoading(false);
+                resetFormLogin();
+                setFloatMessageState(() => ({
+                    description: 'Usuario autenticado correctamente',
+                    summary: '¡Correcto!',
+                    isActive: true,
+                    type: 'green'
+                }));
+                
+                // Redirigir al dashboard o página principal
+                setTimeout(() => {
+                    router.push('/');
+                }, 1000);
+            } else {
+                setIsLoading(false);
+                setFloatMessageState(() => ({
+                    description: result.error || 'Ocurrió un error al iniciar sesión',
+                    summary: '¡Error!',
+                    isActive: true,
+                    type: 'red'
+                }));
+                setTimeout(() => {
+                    setFloatMessageState(() => ({}));
+                }, 4000);
+            }
+        } catch (error) {
             setIsLoading(false);
-            resetFormLogin();
             setFloatMessageState(() => ({
-                description: 'Usuario autenticado correctamente',
-                summary: '¡Correcto!',
-                isActive: true,
-                type: 'green'
-            }));
-            console.log('authLoginResponse', authLoginResponse);
-            setTimeout(() => {
-                setFloatMessageState(() => ({}));
-            }, 4000);
-        } else {
-            setIsLoading(false);
-            setFloatMessageState(() => ({
-                description: authLoginResponse && authLoginResponse.error ? authLoginResponse.error.message : 'Ocurrió un error al iniciar sesión',
+                description: 'Error inesperado al iniciar sesión',
                 summary: '¡Error!',
                 isActive: true,
                 type: 'red'
