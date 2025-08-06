@@ -1,4 +1,4 @@
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ProtectedRoute } from "@/ui/components/routes/ProtectedRoute";
 
 export const metadata = {
     title: 'Ventas'

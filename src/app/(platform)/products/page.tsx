@@ -15,7 +15,7 @@ import { viewAllBrandsAction } from "@/features/brand/actions/view-all-brands.ac
 import { BrandModal } from "@/features/brand/ui/BrandModal";
 import { SeasonModal } from "@/features/season/ui/SeasonModal";
 import { viewAllSeasonsAction } from "@/features/season/actions/view-all-seasons.action";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ProtectedRoute } from "@/ui/components/routes/ProtectedRoute";
 
 export const metadata:Metadata = {
     title: 'Productos'

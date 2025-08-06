@@ -1,7 +1,7 @@
 "use client";
 
-import { useAuthenticatedRequest } from "@/hooks/useAuthenticatedRequest";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthenticatedRequest } from "@/shared/hooks/useAuthenticatedRequest";
+import { useAuth } from "@/shared/hooks/useAuth";
 import { useState, useEffect } from "react";
 
 // Ejemplo de hook para usar con cualquier endpoint que requiera autenticación

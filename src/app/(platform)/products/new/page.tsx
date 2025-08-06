@@ -1,4 +1,4 @@
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ProtectedRoute } from "@/ui/components/routes/ProtectedRoute";
 import { viewAllBrandsAction } from "@/features/brand/actions/view-all-brands.action";
 import { ViewAllCategoriesAction } from "@/features/category/actions/view-all-categories.action";
 import { FormNewProduct } from "@/features/product/ui/FormNewProduct";

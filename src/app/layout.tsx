@@ -1,5 +1,5 @@
 import "../ui/styles/globals.css";
-import { AuthProvider } from "@/providers/auth-provider";
+import { AuthProvider } from "@/shared/providers/auth-provider";
 
 export default async function RootLayout({
   children,

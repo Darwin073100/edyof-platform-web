@@ -1,7 +1,7 @@
 "use client";
 
-import { useAuth, useWorkspace } from "@/hooks/useAuth";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { useAuth, useWorkspace } from "@/shared/hooks/useAuth";
+import { ProtectedRoute } from "@/ui/components/routes/ProtectedRoute";
 import { useRouter } from "next/navigation";
 
 export default function Dashboard() {

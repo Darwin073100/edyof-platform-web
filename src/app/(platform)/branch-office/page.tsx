@@ -1,5 +1,5 @@
 'use client'
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ProtectedRoute } from "@/ui/components/routes/ProtectedRoute";
 import { Button } from "@/ui/components/buttons";
 import { TextInput } from "@/ui/components/inputs";
 import { LabelInput } from "@/ui/components/labels";
