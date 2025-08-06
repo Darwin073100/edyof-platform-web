@@ -35,7 +35,7 @@ export function ProtectedRoute({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex w-full h-screen items-center justify-center">
         <Spinner />
       </div>
     );
@@ -43,7 +43,7 @@ export function ProtectedRoute({
 
   if (!isAuthenticated) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex w-full h-screen items-center justify-center">
         <p>Redirigiendo al login...</p>
       </div>
     );

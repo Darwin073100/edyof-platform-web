@@ -1,4 +1,5 @@
 'use client'
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Button } from "@/ui/components/buttons";
 import { TextInput } from "@/ui/components/inputs";
 import { LabelInput } from "@/ui/components/labels";
@@ -13,7 +14,7 @@ export default function () {
     };
 
     return (
-        <>
+        <ProtectedRoute>
             <div className="flex w-full justify-center">
                 <div className="flex flex-col gap-4 bg-white shadow-2xl rounded-2xl mx-auto max-w-2xl p-8 lg:max-w-7xl">
                     <div className="flex gap-2 items-center">
@@ -113,6 +114,6 @@ export default function () {
                     </div>
                 </Modal> */}
             </div>
-        </>
+        </ProtectedRoute>
     );
 }

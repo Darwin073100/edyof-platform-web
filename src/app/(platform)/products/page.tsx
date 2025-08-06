@@ -15,6 +15,7 @@ import { viewAllBrandsAction } from "@/features/brand/actions/view-all-brands.ac
 import { BrandModal } from "@/features/brand/ui/BrandModal";
 import { SeasonModal } from "@/features/season/ui/SeasonModal";
 import { viewAllSeasonsAction } from "@/features/season/actions/view-all-seasons.action";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 export const metadata:Metadata = {
     title: 'Productos'
@@ -34,7 +35,8 @@ export default async function ProductsPage() {
     
 
     return (
-        <main className="flex flex-col gap-4 w-full">
+        <ProtectedRoute>
+            <main className="flex flex-col gap-4 w-full">
             <ProductActionsBar/>
             <ProductSearch/>
             <h1 className="text-xl">Lista de productos</h1>
@@ -49,5 +51,6 @@ export default async function ProductsPage() {
             <SeasonModal
                 seasonList={ seasonItems }/>
         </main>
+        </ProtectedRoute>
     );
 }
