@@ -8,14 +8,13 @@ import { TextInput } from '../../../ui/components/inputs';
 import { Button } from '../../../ui/components/buttons';
 import { FloatMessage } from '@/ui/components/messages';
 import { Spinner } from '@/ui/components/loadings/Spinner';
-import { HiSave } from 'react-icons/hi';
 import { FloatMessageType } from '@/shared/ui/types/FloatMessageType';
-import { createNewBranchOfficeAction } from '../actions/create.new.branch-office.action';
 import { Result } from '@/shared/features/result';
 import { ErrorEntity } from '@/shared/features/error.entity';
-import { BranchOfficeInterface } from '../domain/entities/branch-office.interface';
 import { useRouter } from 'next/navigation';
 import { HiMiniArrowLongRight } from 'react-icons/hi2';
+import { BranchOfficeInterface } from '@/features/branch-office/domain/entities/branch-office.interface';
+import { createNewBranchOfficeAction } from '@/features/branch-office/actions/create.new.branch-office.action';
 
 const schema = yup.object({
     name: yup.string().required('El campo nombre es obligatorio').min(3, 'El valor minimo debe ser de 3 caracteres'),
@@ -34,7 +33,7 @@ const schema = yup.object({
 type FormData = yup.InferType<typeof schema>
 
 
-export const CreateBranchForm = () => {
+export const InitAcountForm = () => {
     const [floatMessageState, setFloatMessageState] = useState<FloatMessageType>({});
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();

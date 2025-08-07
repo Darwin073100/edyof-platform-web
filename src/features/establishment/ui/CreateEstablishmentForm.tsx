@@ -76,8 +76,7 @@ export const CreateEstablishmentForm = () => {
         <>
             <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-8 rounded-xl shadow-md flex flex-col gap-4 max-w-[450px]">
                 <h1 className="text-lg text-center">
-                    ¡Estas a un simple paso para tener todo listo,
-                    solo debes ingresar el nombre de tu establecimiento!
+                    ¡Debes ingresar el nombre de tu establecimiento!
                 </h1>
                 <TextInput
                     {...register("name")}

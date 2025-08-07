@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 import { registerInitialProductAction } from '../actions/register-initial-product.action';
 import { RegisterInitialProductDTO } from '../application/dtos/register-initial-product.dto';
 import { LocationEnum } from '@/features/inventory/domain/enums/location.enum';
+import { useWorkspace } from '@/shared/hooks/useAuth';
 
 const schema = yup.object({
     //Product
@@ -65,6 +66,7 @@ const useSaveProduct = () => {
     const [floatMessageState, setFloatMessageState] = useState<FloatMessageType>({});
     const [isLoading, setIsLoading] = useState(false);
     const { product, setProduct } = useProductStore();
+    const { establishment } = useWorkspace();
 
     const { register, handleSubmit, reset, setValue, watch, clearErrors, formState: { errors } } = useForm({
         resolver: yupResolver(schema),
@@ -104,7 +106,7 @@ const useSaveProduct = () => {
         let productResult;
 
         const newProduct: RegisterInitialProductDTO = {
-            establishmentId: '1',
+            establishmentId: establishment?.establishmentId|| '0',
             categoryId: data.categoryId,
             brandId: data.brandId,
             seasonId: data.seasonId,

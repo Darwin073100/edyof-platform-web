@@ -3,7 +3,7 @@ import { CreateBranchForm } from "@/features/branch-office/ui/CreateBranchForm"
 import Image from "next/image"
 
 export const metadata = {
-  title: 'Crear Sucursal'
+  title: 'Crear usuario'
 }
 
 export default async function () {
@@ -16,8 +16,7 @@ export default async function () {
             alt="logo" src={Logo} />
           <div className="w-[800px]">
             <h1 className="text-lg text-center text-gray-700">
-              !Excelente¡ Ahora es momento de ingresa la información para dar de alta
-              tu sucursal inicial y poder utilizar la plataforma.
+              !Excelente¡ Ahora es momento de dar de alta tu prier usuario.
             </h1>
           </div>
         </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useSession, signIn, signOut } from "next-auth/react";
-import { UserWorkspaceResponseDTO } from "@/features/auth/application/dtos/user-workspace-response.dto";
 
 export function useAuth() {
   const { data: session, status } = useSession();
