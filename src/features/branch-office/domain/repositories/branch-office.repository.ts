@@ -1,7 +1,8 @@
 import { Result } from "@/shared/features/result";
-import { BranchOfficeInterface } from "../entities/branch-office.interface";
+import { BranchOfficeEntity } from "../entities/branch-office.entity";
 import { ErrorEntity } from "@/shared/features/error.entity";
+import { CreateBranchOfficeDTO } from "../../application/dtos/create-branch-office.dto";
 
 export interface BranchOfficeRepository{
-    save(data:BranchOfficeInterface):Promise<Result<BranchOfficeInterface, ErrorEntity>>
+    save(data:CreateBranchOfficeDTO):Promise<Result<BranchOfficeEntity, ErrorEntity>>
 }

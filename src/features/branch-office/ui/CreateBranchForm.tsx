@@ -8,14 +8,13 @@ import { TextInput } from '../../../ui/components/inputs';
 import { Button } from '../../../ui/components/buttons';
 import { FloatMessage } from '@/ui/components/messages';
 import { Spinner } from '@/ui/components/loadings/Spinner';
-import { HiSave } from 'react-icons/hi';
 import { FloatMessageType } from '@/shared/ui/types/FloatMessageType';
 import { createNewBranchOfficeAction } from '../actions/create.new.branch-office.action';
-import { Result } from '@/shared/features/result';
-import { ErrorEntity } from '@/shared/features/error.entity';
-import { BranchOfficeInterface } from '../domain/entities/branch-office.interface';
 import { useRouter } from 'next/navigation';
 import { HiMiniArrowLongRight } from 'react-icons/hi2';
+import { CreateBranchOfficeDTO } from '../application/dtos/create-branch-office.dto';
+import { useEstablishmentStore } from '@/features/establishment/infraestructure/establishment.store';
+import { useBranchOfficeStore } from '../infraestructure/branch-office.store';
 
 const schema = yup.object({
     name: yup.string().required('El campo nombre es obligatorio').min(3, 'El valor minimo debe ser de 3 caracteres'),
@@ -37,6 +36,8 @@ type FormData = yup.InferType<typeof schema>
 export const CreateBranchForm = () => {
     const [floatMessageState, setFloatMessageState] = useState<FloatMessageType>({});
     const [isLoading, setIsLoading] = useState(false);
+    const { establishment } = useEstablishmentStore();
+    const { setBranchOffice } = useBranchOfficeStore();
     const router = useRouter();
 
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
@@ -49,42 +50,35 @@ export const CreateBranchForm = () => {
         setIsLoading(true);
 
         let resp;
-        if (!errors.name) {
-            const branch: BranchOfficeInterface = {
-                name: data.name,
-                establishmentId: BigInt(14),
-                street: data.street,
-                internalNumber: data.interiorNumber,
-                externalNumber: data.exteriorNumber,
-                postalCode: data.postalCode,
-                neighborhood: data.neighborhood,
-                municipality: data.municipality,
-                country: data.country,
-                city: data.city,
-                state: data.state,
-                reference: data.reference?.toString()
-            };
-            console.log(branch);
+        const branch: CreateBranchOfficeDTO = {
+            name: data.name,
+            establishmentId: establishment?.establishmentId?? BigInt(0),
+            street: data.street,
+            internalNumber: data.interiorNumber,
+            externalNumber: data.exteriorNumber,
+            postalCode: data.postalCode,
+            neighborhood: data.neighborhood,
+            municipality: data.municipality,
+            country: data.country,
+            city: data.city,
+            state: data.state,
+            reference: data.reference?.toString()
+        };
+        console.log(branch);
 
-            resp = await createNewBranchOfficeAction(branch);
-        } else {
-            resp = Result.failure({
-                error: 'Hay un error',
-                message: 'Hay un error',
-                statusCode: 500,
-                path: '',
-                timestamp: new Date().toDateString()
-            } satisfies ErrorEntity);
-        }
+        resp = await createNewBranchOfficeAction(branch);
 
         if (resp?.ok) {
             setFloatMessageState(() => ({
                 description: 'Sucursal creada correctamente',
                 summary: '¡Correcto!',
                 isActive: true,
-                type: 'blue'
+                type: 'green'
             }));
-            router.push('/create-first-user')
+            
+            resp.value? setBranchOffice(resp.value): null;
+
+            router.push('/initial/first-user')
         } else {
             setIsLoading(false);
             setFloatMessageState(() => ({

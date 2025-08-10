@@ -1,6 +1,7 @@
 import { BaseEntity } from "@/shared/features/base.entity";
 
-export interface BranchOfficeInterface extends BaseEntity{
+export interface BranchOfficeEntity extends BaseEntity{
+    branchOfficeId: bigint;
     establishmentId: bigint;
     name: string;
     postalCode: string;

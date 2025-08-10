@@ -1,14 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-interface Establishment {
-    establishmentId?: string;
-    name: string;
-    createdAt?: Date;
-    updatedAt?: Date;
-}
+import { EstablishmentEntity } from '../domain/entities/establishment.entity';
+
 interface State{
-    establishment?: Establishment
-    setEstablishment: (data: Establishment) => void;
+    establishment?: EstablishmentEntity
+    setEstablishment: (data: EstablishmentEntity) => void;
     clearEstablishment:()=> void;
 }
 

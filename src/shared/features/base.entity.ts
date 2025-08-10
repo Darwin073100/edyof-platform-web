@@ -1,5 +1,5 @@
 export interface  BaseEntity{
-    createdAt?: Date,
+    createdAt: Date,
     updatedAt?: Date | null,
     deletedAt?: Date | null,
 }

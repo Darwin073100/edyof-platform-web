@@ -9,25 +9,21 @@ import { Button } from '../../../ui/components/buttons';
 import { FloatMessage } from '@/ui/components/messages';
 import { Spinner } from '@/ui/components/loadings/Spinner';
 import { FloatMessageType } from '@/shared/ui/types/FloatMessageType';
-import { Result } from '@/shared/features/result';
-import { ErrorEntity } from '@/shared/features/error.entity';
 import { useRouter } from 'next/navigation';
 import { HiMiniArrowLongRight } from 'react-icons/hi2';
-import { BranchOfficeInterface } from '@/features/branch-office/domain/entities/branch-office.interface';
-import { createNewBranchOfficeAction } from '@/features/branch-office/actions/create.new.branch-office.action';
+import { RegisterUserWithEmployeeDTO } from '../application/dtos/register-user-with-employee.dto';
+import { registerUserWithEmployeeAction } from '../actions/register-user-with-employee.action';
+import { useBranchOfficeStore } from '@/features/branch-office/infraestructure/branch-office.store';
+import { useEstablishmentStore } from '@/features/establishment/infraestructure/establishment.store';
 
 const schema = yup.object({
-    name: yup.string().required('El campo nombre es obligatorio').min(3, 'El valor minimo debe ser de 3 caracteres'),
-    postalCode: yup.string().required('El campo codigo postal es obligatorio'),
-    street: yup.string().required('La campo calle es requerido').min(3, 'Mínimo 3 caracteres debes escribir'),
-    interiorNumber: yup.string().default('S/N'),
-    exteriorNumber: yup.string().default('S/N'),
-    municipality: yup.string().required('El campo municipio es obligatorio'),
-    city: yup.string().required('El campo ciudad es obligatorio'),
-    state: yup.string().required('El campo estado es obligatorio'),
-    neighborhood: yup.string().required('El campo colonia es obligatorio'),
-    country: yup.string().required('El campo ciudad es obligatorio'),
-    reference: yup.string().optional().notRequired().default(''),
+    firstName: yup.string().required('El campo nombre es obligatorio.').min(3, 'El valor minimo debe ser de 3 caracteres'),
+    lastName: yup.string().required('El campo apellidos es obligatorio.'),
+    username: yup.string().required('La campo nombre de usuario es obligatorio.').min(3, 'Mínimo 3 caracteres debes escribir'),
+    email: yup.string().required('El campo correo es obligatorio.').email('El formato para el correo es alberto@platform.com.mx'),
+    password: yup.string().required('La contraseña es obligatoria.').min(8,'La contraseña debe tener al menos 8 caracteres.'),
+    passwordConfirm: yup.string().required('Debes confirmar tu contraseña.').oneOf([yup.ref('password')], 'Las contraseñas no coindicen.'),
+    phoneNumber: yup.string().nullable().optional().default(''),
 }).required();
 
 type FormData = yup.InferType<typeof schema>
@@ -36,54 +32,49 @@ type FormData = yup.InferType<typeof schema>
 export const InitAcountForm = () => {
     const [floatMessageState, setFloatMessageState] = useState<FloatMessageType>({});
     const [isLoading, setIsLoading] = useState(false);
+    const {clearBranchOffice, branchOffice} = useBranchOfficeStore();
+    const { clearEstablishment} = useEstablishmentStore();
     const router = useRouter();
 
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
         resolver: yupResolver(schema),
-        mode: 'onChange'
+        mode: 'onChange',
     });
+
+    const cleanLocalStorage = ()=>{
+        clearBranchOffice();
+        clearEstablishment();
+    }
 
     const onSubmit = async (data: FormData) => {
         setFloatMessageState(() => ({}));
         setIsLoading(true);
 
         let resp;
-        if (!errors.name) {
-            const branch: BranchOfficeInterface = {
-                name: data.name,
-                establishmentId: BigInt(14),
-                street: data.street,
-                internalNumber: data.interiorNumber,
-                externalNumber: data.exteriorNumber,
-                postalCode: data.postalCode,
-                neighborhood: data.neighborhood,
-                municipality: data.municipality,
-                country: data.country,
-                city: data.city,
-                state: data.state,
-                reference: data.reference?.toString()
-            };
-            console.log(branch);
+        const userWithEmployee: RegisterUserWithEmployeeDTO = {
+            branchOfficeId: branchOffice?.branchOfficeId ?? BigInt(0),
+            email: data.email,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            password: data.password,
+            username: data.username,
+            phoneNumber: data.phoneNumber
+        };
+        console.log(userWithEmployee);
 
-            resp = await createNewBranchOfficeAction(branch);
-        } else {
-            resp = Result.failure({
-                error: 'Hay un error',
-                message: 'Hay un error',
-                statusCode: 500,
-                path: '',
-                timestamp: new Date().toDateString()
-            } satisfies ErrorEntity);
-        }
+        resp = await registerUserWithEmployeeAction(userWithEmployee);
 
         if (resp?.ok) {
             setFloatMessageState(() => ({
-                description: 'Sucursal creada correctamente',
+                description: 'Usuario creado correctamente, ahora solo inicia sesión',
                 summary: '¡Correcto!',
                 isActive: true,
                 type: 'blue'
             }));
-            router.push('/create-first-user')
+
+            cleanLocalStorage();
+
+            router.push('/auth/login')
         } else {
             setIsLoading(false);
             setFloatMessageState(() => ({
@@ -99,100 +90,75 @@ export const InitAcountForm = () => {
     return (
         <>
             <form onSubmit={handleSubmit(onSubmit)} className="bg-white w-[800px] rounded-2xl shadow-md p-8 flex flex-col gap-4">
-                <h1 className="text-3xl mb-4 text-gray-700">Alta de una sucursal</h1>
+                <h1 className="text-3xl text-gray-700">Alta de la cuenta de usuario</h1>
                 <div className='w-full flex justify-center gap-4'>
                     <div className='w-full'>
                         <div>
-                            <LabelInput htmlFor="name" value="Nombre de la sucursal" />
+                            <LabelInput htmlFor="firstname" value="Nombre del usuario" />
                             <TextInput
-                                {...register('name')}
-                                error={!!errors.name}
-                                errorMessage={errors.name?.message}
-                                name="name" placeholder="Los Tamarindos S.A. de C.V." />
+                                {...register('firstName')}
+                                type='text'
+                                error={!!errors.firstName}
+                                errorMessage={errors.firstName?.message}
+                                name="firstName" placeholder="Alberto" />
                         </div>
                         <div>
-                            <LabelInput htmlFor="postalCode" value="Codigo postal" />
+                            <LabelInput htmlFor="lastName" value="Apellidos" />
                             <TextInput
-                                {...register('postalCode')}
-                                error={!!errors.postalCode}
-                                errorMessage={errors.postalCode?.message}
-                                name="postalCode" placeholder="41700" type="text" />
+                                {...register('lastName')}
+                                type="text"
+                                error={!!errors.lastName}
+                                errorMessage={errors.lastName?.message}
+                                name="lastName" placeholder="Morales Medel" />
                         </div>
                         <div>
-                            <LabelInput htmlFor="street" value="Nombre de la calle" />
+                            <LabelInput htmlFor="password" value="Contraseña" />
                             <TextInput
-                                {...register('street')}
-                                error={!!errors.street}
-                                errorMessage={errors.street?.message}
-                                name="street" placeholder="Juan Ruiz de Alarcón" />
+                                {...register('password')}
+                                type='password'
+                                error={!!errors.password}
+                                errorMessage={errors.password?.message}
+                                name="password" placeholder="ContrSup3rSecr374$" />
                         </div>
                         <div>
-                            <LabelInput htmlFor="interiorNumber" value="Numero interior" />
+                            <LabelInput htmlFor="passwordConfirm" value="Confirma tu contraseña" />
                             <TextInput
-                                {...register('interiorNumber')}
-                                error={!!errors.interiorNumber}
-                                errorMessage={errors.interiorNumber?.message}
-                                name="interiorNumber" placeholder="14" />
-                        </div>
-                        <div>
-                            <LabelInput htmlFor="exteriorNumber" value="Numero exterior" />
-                            <TextInput
-                                {...register('exteriorNumber')}
-                                error={!!errors.exteriorNumber}
-                                errorMessage={errors.exteriorNumber?.message}
-                                name="exteriorNumber" placeholder="S/N" />
+                                {...register('passwordConfirm')}
+                                type='password'
+                                error={!!errors.passwordConfirm}
+                                errorMessage={errors.passwordConfirm?.message}
+                                name="passwordConfirm" placeholder="ContrSup3rSecr374$" />
                         </div>
                     </div>
                     <div className='w-full'>
                         <div>
-                            <LabelInput htmlFor="neighborhood" value="Colonia" />
+                            <LabelInput htmlFor="username" value="Nombre de usuario" />
                             <TextInput
-                                {...register('neighborhood')}
-                                error={!!errors.neighborhood}
-                                errorMessage={errors.neighborhood?.message}
-                                name="neighborhood" placeholder="Barrio de la Guadalupe" />
+                                {...register('username')}
+                                type="text"
+                                error={!!errors.username}
+                                errorMessage={errors.username?.message}
+                                name="username" placeholder="beto89" />
                         </div>
                         <div>
-                            <LabelInput htmlFor="country" value="País" />
+                            <LabelInput htmlFor="email" value="Correo electrónico" />
                             <TextInput
-                                {...register('country')}
-                                error={!!errors.country}
-                                errorMessage={errors.country?.message}
-                                name="country" placeholder="México" />
+                                {...register('email')}
+                                type='email'
+                                error={!!errors.email}
+                                errorMessage={errors.email?.message}
+                                name="email" placeholder="albert@platform.com.mx" />
                         </div>
                         <div>
-                            <LabelInput htmlFor="municipality" value="Municipio" />
+                            <LabelInput htmlFor="phoneNumber" value="Número de teléfono" />
                             <TextInput
-                                {...register('municipality')}
-                                error={!!errors.municipality}
-                                errorMessage={errors.municipality?.message}
-                                name="municipality" placeholder="Ometepec" />
-                        </div>
-                        <div>
-                            <LabelInput htmlFor="city" value="Ciudad" />
-                            <TextInput
-                                {...register('city')}
-                                error={!!errors.city}
-                                errorMessage={errors.city?.message}
-                                name="city" placeholder="Ometepec" />
-                        </div>
-                        <div>
-                            <LabelInput htmlFor="state" value="Estado" />
-                            <TextInput
-                                {...register('state')}
-                                error={!!errors.state}
-                                errorMessage={errors.state?.message}
-                                name="state" placeholder="Guerrero" />
+                                {...register('phoneNumber')}
+                                type='text'
+                                error={!!errors.phoneNumber}
+                                errorMessage={errors.phoneNumber?.message}
+                                name="phoneNumber" placeholder="7418970324" />
                         </div>
                     </div>
-                </div>
-                <div>
-                    <LabelInput htmlFor="reference" value="Referencia adicional" />
-                    <TextInput
-                        {...register('reference')}
-                        error={!!errors.reference}
-                        errorMessage={errors.reference?.message}
-                        name="reference" placeholder="Guerrero" />
                 </div>
                 <Button
                     type='submit'

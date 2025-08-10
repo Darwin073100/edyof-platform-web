@@ -11,8 +11,8 @@ import { FloatMessageType } from '@/shared/ui/types/FloatMessageType'
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ErrorEntity } from '@/shared/features/error.entity'
-import { Result } from '@/shared/features/result'
+import { useEstablishmentStore } from '../infraestructure/establishment.store'
+import { CreateEstablishmentDTO } from '../application/dtos/create-establishment.dto'
 
 const schema = yup.object({
     name: yup.string().required('El campo nombre es requerido').min(3, 'El valor debe ser mayor a 3 caracteres')
@@ -30,6 +30,7 @@ export const CreateEstablishmentForm = () => {
     // const { setEstablishment, establishment } = useEstablishmentStore();
     const [floatMessageState, setFloatMessageState] = useState<FloatMessageType>({});
     const [isLoading, setIsLoading] = useState(false);
+    const { setEstablishment } = useEstablishmentStore();
     
 
     const router = useRouter();
@@ -38,18 +39,12 @@ export const CreateEstablishmentForm = () => {
         setFloatMessageState(()=>({}));
         setIsLoading(true);
 
-        let resp;
-        if( !errors.name){
-            resp = await createEstablishmentAction(data.name);
-        } else {
-            resp = Result.failure({
-                error: 'Hay un error',
-                message: 'Hay un error',
-                statusCode: 500,
-                path: '/this',
-                timestamp: new Date().toDateString()
-            } satisfies ErrorEntity);
+        const dto: CreateEstablishmentDTO = {
+            name: data.name
         }
+
+        let resp;
+        resp = await createEstablishmentAction(dto);
 
         if (resp?.ok) {
             setIsLoading(false);
@@ -57,9 +52,12 @@ export const CreateEstablishmentForm = () => {
                 description: 'Establecimiento creado correctamente',
                 summary: '¡Correcto!',
                 isActive: true,
-                type: 'blue'
+                type: 'green'
             }));
-            router.push('/create-first-branch-office')
+            
+            resp.value ? setEstablishment(resp.value): null;
+
+            router.push('/initial/first-branch-office')
         } else {
             setIsLoading(false);
             setFloatMessageState(()=>({

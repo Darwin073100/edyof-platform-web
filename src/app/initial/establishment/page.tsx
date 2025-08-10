@@ -1,9 +1,9 @@
+import { CreateEstablishmentForm } from "@/features/establishment/ui/CreateEstablishmentForm";
+import Image from "next/image";
 import Logo from "@/ui/assets/images/logologo.png"
-import { CreateBranchForm } from "@/features/branch-office/ui/CreateBranchForm"
-import Image from "next/image"
 
 export const metadata = {
-  title: 'Crear usuario'
+  title: 'Crear Establecimeinto'
 }
 
 export default async function () {
@@ -14,13 +14,8 @@ export default async function () {
         <div className="flex flex-col items-center">
           <Image className="2xl:w-[250px] 2xl:h-[250px] xl:w-[250px] xl:h-[250px] lg:w-[250px] lg:h-[250px] md:w-[200px] md:h-[200px] sm:w-[150px] sm:h-[150px] rounded-full"
             alt="logo" src={Logo} />
-          <div className="w-[800px]">
-            <h1 className="text-lg text-center text-gray-700">
-              !Excelente¡ Ahora es momento de dar de alta tu prier usuario.
-            </h1>
-          </div>
         </div>
-        <CreateBranchForm />
+        <CreateEstablishmentForm />
       </div>
     </>
   )

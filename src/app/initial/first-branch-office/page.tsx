@@ -17,7 +17,7 @@ export default async function () {
           <div className="w-[800px]">
             <h1 className="text-lg text-center text-gray-700">
               !Excelente¡ Ahora es momento de ingresa la información para dar de alta
-              tu sucursal inicial y poder utilizar la plataforma.
+              tu sucursal inicial.
             </h1>
           </div>
         </div>
