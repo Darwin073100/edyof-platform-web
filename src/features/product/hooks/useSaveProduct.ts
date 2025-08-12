@@ -56,7 +56,23 @@ const schema = yup.object({
     saleQuantityMany: yup.number().required('La cantidad de producto por mayoreo es obligatorio.').positive('El número debe ser positivo.').typeError('Asegurate de ingresar la información correcta.'),
     salePriceSpecial: yup.number().required('El precio de venta especial es obligatorio.').positive('El número debe ser positivo.').typeError('Asegurate de ingresar la información correcta.'),
     minStockBranch: yup.number().required('El stock mínimo por sucursal es obligatorio.').positive('El número debe ser positivo.').typeError('Asegurate de ingresar la información correcta.'),
-    maxStockBranch: yup.number().optional().notRequired().default(0).positive('El numero debe ser positivo').typeError('Asegurate de ingresar la información correcta.')
+    maxStockBranch: yup.number().optional().notRequired().default(0).positive('El numero debe ser positivo').typeError('Asegurate de ingresar la información correcta.'),
+    // LotUnitPurchases validation
+    lotUnitPurchases: yup.array().of(
+        yup.object({
+            purchasePrice: yup.string().required('El precio de compra es obligatorio.').test('is-number', 'El precio debe ser un número válido', (value) => {
+                return value === '' || !isNaN(Number(value));
+            }).test('is-positive', 'El precio debe ser positivo', (value) => {
+                return value === '' || Number(value) > 0;
+            }),
+            purchaseQuantity: yup.string().required('La cantidad de compra es obligatoria.').test('is-number', 'La cantidad debe ser un número válido', (value) => {
+                return value === '' || !isNaN(Number(value));
+            }).test('is-positive', 'La cantidad debe ser positiva', (value) => {
+                return value === '' || Number(value) > 0;
+            }),
+            unit: yup.string().required('La unidad es obligatoria.').test('not-empty', 'Debes elegir una unidad.', value => value !== undefined && value !== null && value !== '')
+        })
+    ).min(1, 'Debe haber al menos una unidad de compra.')
 }).required();
 
 type FormData = yup.InferType<typeof schema>;
@@ -75,7 +91,10 @@ const useSaveProduct = () => {
         mode: 'onChange',
         defaultValues: {
             expirationDate: new Date(),
-            manufacturingDate: new Date()
+            manufacturingDate: new Date(),
+            lotUnitPurchases: [
+                { purchasePrice: "", purchaseQuantity: "", unit: "" }
+            ]
         }
     });
 
@@ -84,6 +103,9 @@ const useSaveProduct = () => {
             // sku: uuidv4(),
             lotNumber: new Date().getDate().toString(),
             lastStockedAt: new Date(),
+            lotUnitPurchases: [
+                { purchasePrice: "", purchaseQuantity: "", unit: "" }
+            ]
         });
     }, [reset]);
 
@@ -92,20 +114,25 @@ const useSaveProduct = () => {
     ]);
 
     const addLotUnitPurchase = () => {
-        setLotUnitPurchases([
+        const newLotUnitPurchases = [
             ...lotUnitPurchases,
             { purchasePrice: "", purchaseQuantity: "", unit: "" },
-        ]);
+        ];
+        setLotUnitPurchases(newLotUnitPurchases);
+        setValue('lotUnitPurchases', newLotUnitPurchases);
     };
 
     const removeLotUnitPurchase = (index: number) => {
-        setLotUnitPurchases(lotUnitPurchases.filter((_, i) => i !== index));
+        const newLotUnitPurchases = lotUnitPurchases.filter((_, i) => i !== index);
+        setLotUnitPurchases(newLotUnitPurchases);
+        setValue('lotUnitPurchases', newLotUnitPurchases);
     };
 
     const updateLotUnitPurchase = (index: number, field: string, value: string) => {
         const updated = [...lotUnitPurchases];
         updated[index] = { ...updated[index], [field]: value };
         setLotUnitPurchases(updated);
+        setValue('lotUnitPurchases', updated);
     };
 
     const universalBarCode = watch('universalBarCode');
@@ -115,11 +142,15 @@ const useSaveProduct = () => {
 
     const resetFormProduct = () => {
         setProduct(null);
-        reset({});
+        const defaultLotUnitPurchases = [{ purchasePrice: "", purchaseQuantity: "", unit: "" }];
+        setLotUnitPurchases(defaultLotUnitPurchases);
+        reset({
+            lotUnitPurchases: defaultLotUnitPurchases
+        });
         clearErrors(['brandId', 'categoryId', 'seasonId', 'brandId', 'unitOfMeasure', 'minStockGlobal',
             'universalBarCode', 'imageUrl', 'name', 'description', 'purchasePrice', 'receivedDate',
             'location', 'internalBarCode', 'salePriceOne', 'salePriceMany', 'salePriceSpecial',
-            'saleQuantityMany', 'minStockBranch', 'maxStockBranch']);
+            'saleQuantityMany', 'minStockBranch', 'maxStockBranch', 'lotUnitPurchases']);
     }
 
     const onSubmit = async (data: FormData) => {
@@ -141,11 +172,11 @@ const useSaveProduct = () => {
             universalBarCode: data.universalBarCode,
             initialQuantity: data.initialQuantity ?? 0,
             purchaseUnit: data.purchaseUnit as unknown as ForSaleEnum,
-            lotUnitPurchases: lotUnitPurchases.map(purchase => ({
+            lotUnitPurchases: data.lotUnitPurchases?.map(purchase => ({
                 purchasePrice: parseFloat(purchase.purchasePrice),
                 purchaseQuantity: parseFloat(purchase.purchaseQuantity),
                 unit: purchase.unit as ForSaleEnum
-            })),
+            })) || [],
             lotNumber: data.lotNumber,
             purchasePrice: data.purchasePrice,
             receivedDate: data.receivedDate,

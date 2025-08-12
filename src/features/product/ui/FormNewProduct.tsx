@@ -194,7 +194,11 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                                 placeholder="Fecha de caducidad" />
                         </div>
                         <div className='mb-2 flex flex-col gap-2'>
-                            <LabelInput value='Costo por unidades'/>
+                            <LabelInput value='Costo por unidades *'/>
+                            {/* Mostrar error general del array si existe */}
+                            {errors.lotUnitPurchases && typeof errors.lotUnitPurchases.message === 'string' && (
+                                <p className="text-red-500 text-sm">{errors.lotUnitPurchases.message}</p>
+                            )}
                             {lotUnitPurchases.map((item, index) => (
                                 <div
                                     key={index}
@@ -202,56 +206,61 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                                 >
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700">
-                                                Precio de compra
-                                            </label>
+                                            <LabelInput value="Precio de compra *" />
                                             <TextInput
                                                 type="number"
                                                 value={item.purchasePrice}
                                                 onChange={(e) =>
                                                     updateLotUnitPurchase(index, "purchasePrice", e.target.value)
                                                 }
+                                                error={!!(errors.lotUnitPurchases?.[index]?.purchasePrice)}
+                                                errorMessage={errors.lotUnitPurchases?.[index]?.purchasePrice?.message}
+                                                placeholder="0.00"
                                             />
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700">
-                                                Cantidad
-                                            </label>
+                                            <LabelInput value="Cantidad *" />
                                             <TextInput
                                                 type="number"
                                                 value={item.purchaseQuantity}
                                                 onChange={(e) =>
                                                     updateLotUnitPurchase(index, "purchaseQuantity", e.target.value)
                                                 }
+                                                error={!!(errors.lotUnitPurchases?.[index]?.purchaseQuantity)}
+                                                errorMessage={errors.lotUnitPurchases?.[index]?.purchaseQuantity?.message}
+                                                placeholder="0"
                                             />
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700">
-                                                Unidad
-                                            </label>
+                                            <LabelInput value="Unidad *" />
                                             <SelectMenu
                                                 items={forSaleOptions}
                                                 value={item.unit}
                                                 onChange={(e) =>
                                                     updateLotUnitPurchase(index, "unit", e.target.value)
                                                 }
+                                                error={!!(errors.lotUnitPurchases?.[index]?.unit)}
+                                                errorMessage={errors.lotUnitPurchases?.[index]?.unit?.message}
                                             />
                                         </div>
                                     </div>
 
-                                    <button
-                                        type="button"
-                                        onClick={() => removeLotUnitPurchase(index)}
-                                        className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-                                    >
-                                        ✖
-                                    </button>
+                                    {lotUnitPurchases.length > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => removeLotUnitPurchase(index)}
+                                            className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-lg font-bold w-6 h-6 flex items-center justify-center"
+                                            title="Eliminar unidad de compra"
+                                        >
+                                            ✖
+                                        </button>
+                                    )}
                                 </div>
                             ))}
                             <Button
-                            type='button'
+                                type='button'
                                 color='gray'
                                 onClick={addLotUnitPurchase}
                             >
