@@ -10,6 +10,7 @@ import { registerInitialProductAction } from '../actions/register-initial-produc
 import { RegisterInitialProductDTO } from '../application/dtos/register-initial-product.dto';
 import { LocationEnum } from '@/features/inventory/domain/enums/location.enum';
 import { useWorkspace } from '@/shared/hooks/useAuth';
+import { ForSaleEnum } from '../domain/enums/for-sale.enum';
 
 const schema = yup.object({
     //Product
@@ -26,7 +27,8 @@ const schema = yup.object({
         .required('Debes elegir la temporada en la que se vende el producto.')
         .test('not-empty', 'Debes elegir la temporada en la que se vende el producto.', value => value !== undefined && value !== null && value !== ''),
     universalBarCode: yup.string().required('El codigo de barra universal es obligatorio.'),
-    unitOfMeasure: yup.string().required('La unidad de medida es obligatoria'),
+    unitOfMeasure: yup.string().required('La unidad de medida por defecto para venta es obligatoria'),
+    purchaseUnit: yup.string().required('La unidad de medida de compra es obligatoria'),
     minStockGlobal: yup.number().required('El stock minimo por establecimeinto es obligatorio.').typeError('Asegurate de ingresar la información correcta.'),
     imageUrl: yup.string().notRequired().optional().nullable(),
     // Lot
@@ -34,14 +36,14 @@ const schema = yup.object({
     purchasePrice: yup.number().positive('El precio debe ser un número positivo').required('El precio de compra es requerido.').typeError('Asegurate de ingresar la información correcta.'),
     initialQuantity: yup.number().positive('La cantidad de producto inicial es obligatoria.').typeError('Asegurate de ingresar la información correcta.'),
     expirationDate: yup.date()
-            .transform((value, originalValue) => originalValue === '' ? null : value)
-            .optional().notRequired().nullable(),
+        .transform((value, originalValue) => originalValue === '' ? null : value)
+        .optional().notRequired().nullable(),
     manufacturingDate: yup.date()
-            .transform((value, originalValue) => originalValue === '' ? null : value)
-            .optional().notRequired().nullable(),
+        .transform((value, originalValue) => originalValue === '' ? null : value)
+        .optional().notRequired().nullable(),
     receivedDate: yup.date()
-            .required('La fecha de entrada del producto es requerida.')
-            .transform((value, originalValue)=> originalValue === ''? null: value),
+        .required('La fecha de entrada del producto es requerida.')
+        .transform((value, originalValue) => originalValue === '' ? null : value),
     // Inventory
     location: yup.string().required('La ubicacion del producto es obligatorio.'),
     // quantityOnHan: yup.number().required('El stock para la ubicación asignada es obligatorio.').positive('La cantidad debe ser positiva.').typeError('Asegurate de ingresar la información correcta.'),
@@ -66,12 +68,12 @@ const useSaveProduct = () => {
     const [floatMessageState, setFloatMessageState] = useState<FloatMessageType>({});
     const [isLoading, setIsLoading] = useState(false);
     const { product, setProduct } = useProductStore();
-    const { establishment } = useWorkspace();
+    const { establishment, branchOffice } = useWorkspace();
 
     const { register, handleSubmit, reset, setValue, watch, clearErrors, formState: { errors } } = useForm({
         resolver: yupResolver(schema),
         mode: 'onChange',
-        defaultValues:{
+        defaultValues: {
             expirationDate: new Date(),
             manufacturingDate: new Date()
         }
@@ -85,17 +87,38 @@ const useSaveProduct = () => {
         });
     }, [reset]);
 
+    const [lotUnitPurchases, setLotUnitPurchases] = useState([
+        { purchasePrice: "", purchaseQuantity: "", unit: "" },
+    ]);
+
+    const addLotUnitPurchase = () => {
+        setLotUnitPurchases([
+            ...lotUnitPurchases,
+            { purchasePrice: "", purchaseQuantity: "", unit: "" },
+        ]);
+    };
+
+    const removeLotUnitPurchase = (index: number) => {
+        setLotUnitPurchases(lotUnitPurchases.filter((_, i) => i !== index));
+    };
+
+    const updateLotUnitPurchase = (index: number, field: string, value: string) => {
+        const updated = [...lotUnitPurchases];
+        updated[index] = { ...updated[index], [field]: value };
+        setLotUnitPurchases(updated);
+    };
+
     const universalBarCode = watch('universalBarCode');
-    const handleBarCodeMatch = ()=>{
+    const handleBarCodeMatch = () => {
         setValue('internalBarCode', universalBarCode || '');
     }
 
     const resetFormProduct = () => {
         setProduct(null);
         reset({});
-        clearErrors(['brandId', 'categoryId', 'seasonId','brandId', 'unitOfMeasure', 'minStockGlobal', 
-            'universalBarCode', 'imageUrl', 'name', 'description', 'purchasePrice', 'receivedDate', 
-            'location', 'internalBarCode', 'salePriceOne', 'salePriceMany', 'salePriceSpecial', 
+        clearErrors(['brandId', 'categoryId', 'seasonId', 'brandId', 'unitOfMeasure', 'minStockGlobal',
+            'universalBarCode', 'imageUrl', 'name', 'description', 'purchasePrice', 'receivedDate',
+            'location', 'internalBarCode', 'salePriceOne', 'salePriceMany', 'salePriceSpecial',
             'saleQuantityMany', 'minStockBranch', 'maxStockBranch']);
     }
 
@@ -106,7 +129,7 @@ const useSaveProduct = () => {
         let productResult;
 
         const newProduct: RegisterInitialProductDTO = {
-            establishmentId: establishment?.establishmentId|| '0',
+            establishmentId: establishment?.establishmentId || '0',
             categoryId: data.categoryId,
             brandId: data.brandId,
             seasonId: data.seasonId,
@@ -117,12 +140,18 @@ const useSaveProduct = () => {
             imageUrl: data.imageUrl,
             universalBarCode: data.universalBarCode,
             initialQuantity: data.initialQuantity ?? 0,
+            purchaseUnit: data.purchaseUnit as unknown as ForSaleEnum,
+            lotUnitPurchases: lotUnitPurchases.map(purchase => ({
+                purchasePrice: parseFloat(purchase.purchasePrice),
+                purchaseQuantity: parseFloat(purchase.purchaseQuantity),
+                unit: purchase.unit as ForSaleEnum
+            })),
             lotNumber: data.lotNumber,
             purchasePrice: data.purchasePrice,
             receivedDate: data.receivedDate,
             expirationDate: data.expirationDate,
             manufacturingDate: data.manufacturingDate,
-            branchOfficeId: '1',
+            branchOfficeId: branchOffice?.branchOfficeId || '0',
             isSellable: data.isSellable ?? true,
             lastStockedAt: data.lastStockedAt,
             location: data.location as unknown as LocationEnum,
@@ -136,6 +165,7 @@ const useSaveProduct = () => {
             salePriceSpecial: data.salePriceSpecial,
             saleQuantityMany: data.saleQuantityMany,
         }
+        console.log(newProduct)
 
         productResult = await registerInitialProductAction(newProduct);
 
@@ -165,7 +195,7 @@ const useSaveProduct = () => {
         }
     }
     return {
-        product, 
+        product,
         setProduct,
         floatMessageState,
         setFloatMessageState,
@@ -176,7 +206,11 @@ const useSaveProduct = () => {
         handleSubmit,
         register,
         errors,
-        handleBarCodeMatch
+        handleBarCodeMatch,
+        updateLotUnitPurchase,
+        removeLotUnitPurchase,
+        addLotUnitPurchase,
+        lotUnitPurchases
     }
 }
 

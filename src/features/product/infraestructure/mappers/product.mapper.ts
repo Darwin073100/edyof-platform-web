@@ -22,6 +22,8 @@ export class ProductMapper{
             purchasePrice: dto.purchasePrice,
             purchasePriceAtStock: dto.purchasePriceAtStock,
             initialQuantity: dto.initialQuantity,
+            purchaseUnit: dto.purchaseUnit,
+            lotUnitPurchases: dto.lotUnitPurchases,
             isSellable: dto.isSellable,
             location: dto.location,
             internalBarCode: dto.internalBarCode,

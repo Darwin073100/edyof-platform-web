@@ -1,4 +1,6 @@
 import { LocationEnum } from "@/features/inventory/domain/enums/location.enum";
+import { ForSaleEnum } from "../../domain/enums/for-sale.enum";
+import { RegisterLotUnitPurchaseDTO } from "@/features/lot/application/dtos/register-lot-unit-purchase.dto";
 
 export interface RegisterInitialProductHttpDTO {
    // InventoryItem
@@ -19,6 +21,8 @@ export interface RegisterInitialProductHttpDTO {
     lotNumber: string;
     purchasePrice: number;
     initialQuantity: number;
+    purchaseUnit: ForSaleEnum;
+    lotUnitPurchases?: RegisterLotUnitPurchaseDTO[]|null;
     expirationDate?: string | null;
     manufacturingDate?: string | null;
     receivedDate: string;

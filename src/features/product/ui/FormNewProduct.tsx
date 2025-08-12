@@ -8,7 +8,7 @@ import { useSeasonStore } from '@/features/season/infraestructure/season.store';
 import { Button } from '@/ui/components/buttons';
 import { SelectMenu, TextInput } from '@/ui/components/inputs';
 import { LabelInput } from '@/ui/components/labels';
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { TbExchange } from 'react-icons/tb';
 import { useSaveProduct } from '../hooks/useSaveProduct';
 import { FloatMessage } from '@/ui/components/messages';
@@ -25,8 +25,8 @@ interface Props {
 
 const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
     const {
-        errors, floatMessageState, handleSubmit, isLoading,
-        onSubmit, register, handleBarCodeMatch
+        errors, floatMessageState, handleSubmit, isLoading, addLotUnitPurchase,removeLotUnitPurchase,
+        onSubmit, register, handleBarCodeMatch, updateLotUnitPurchase, lotUnitPurchases
     } = useSaveProduct();
 
     const { categories, setCategories } = useCategoryStore();
@@ -64,15 +64,14 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
         text: item.toString()
     }));
 
-
     return (
         <>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="w-full flex md:flex-row sm:flex-col max-sm:flex-col min-md:justify-between">
                     <div className="w-full p-2">
-                        <h2 className="text-xl mb-2 text-white p-1 bg-gray-700 rounded-sm">Producto</h2>
+                        <h2 className="text-xl mb-2 text-white p-1 bg-blue-700 rounded-sm">Producto</h2>
                         <div className="mb-2">
-                            <LabelInput value="Nombre del producto" />
+                            <LabelInput value="Nombre del producto *" />
                             <TextInput
                                 {...register('name')}
                                 error={!!errors.name}
@@ -80,15 +79,15 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                                 placeholder="Nombre del producto" />
                         </div>
                         <div className="mb-2">
-                            <LabelInput value="Código de barras universal" />
+                            <LabelInput value="Código de barras universal *" />
                             <TextInput
                                 {...register('universalBarCode')}
                                 error={!!errors.universalBarCode}
                                 errorMessage={errors.universalBarCode?.message}
-                                placeholder="Código de barras universal" />
+                                placeholder="Código de barras universal *" />
                         </div>
                         <div className="mb-2">
-                            <LabelInput value="Stock Mínimo Global" />
+                            <LabelInput value="Stock Mínimo Global *" />
                             <TextInput
                                 {...register('minStockGlobal')}
                                 error={!!errors.minStockGlobal}
@@ -97,7 +96,7 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                                 placeholder="Stock mínimo" />
                         </div>
                         <div className="mb-2">
-                            <LabelInput value="Categoría" htmlFor='category' />
+                            <LabelInput value="Categoría *" htmlFor='category' />
                             <SelectMenu id='category'
                                 {...register('categoryId')}
                                 error={!!errors.categoryId}
@@ -105,7 +104,7 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                                 items={categoryOptions} />
                         </div>
                         <div className="mb-2">
-                            <LabelInput value="Marca" htmlFor='brand'/>
+                            <LabelInput value="Marca *" htmlFor='brand' />
                             <SelectMenu id='brand'
                                 {...register('brandId')}
                                 error={!!errors.brandId}
@@ -113,12 +112,21 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                                 items={brandOptions} />
                         </div>
                         <div className="mb-2">
-                            <LabelInput value="Temporada" htmlFor='season' />
+                            <LabelInput value="Temporada *" htmlFor='season' />
                             <SelectMenu id='season'
                                 {...register('seasonId')}
                                 error={!!errors.seasonId}
                                 errorMessage={errors.seasonId?.message}
                                 items={seasonOptions} />
+                        </div>
+                        <div className="mb-2">
+                            <LabelInput value="Unidad de medida *" htmlFor='unitOfMeasure' />
+                            <SelectMenu id='unitOfMeasure'
+                                {...register('unitOfMeasure')}
+                                error={!!errors.unitOfMeasure}
+                                errorMessage={errors.unitOfMeasure?.message}
+                                items={forSaleOptions}
+                            />
                         </div>
                         <div className="mb-2">
                             <LabelInput value="Descripción del producto" />
@@ -128,20 +136,20 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                                 errorMessage={errors.description?.message}
                                 placeholder="Descripción" />
                         </div>
+                    </div>
+                    <div className="w-full p-2">
+                        <h2 className="text-xl mb-2 text-white p-1 bg-blue-700 rounded-sm">Lote del producto</h2>
                         <div className="mb-2">
-                            <LabelInput value="Unidad de medida" htmlFor='unitOfMeasure' />
-                            <SelectMenu id='unitOfMeasure'
-                                {...register('unitOfMeasure')}
-                                error={!!errors.unitOfMeasure}
-                                errorMessage={errors.unitOfMeasure?.message}
+                            <LabelInput value="Unidad de medida *" htmlFor='purchaseUnit' />
+                            <SelectMenu id='purchaseUnit'
+                                {...register('purchaseUnit')}
+                                error={!!errors.purchaseUnit}
+                                errorMessage={errors.purchaseUnit?.message}
                                 items={forSaleOptions}
                             />
                         </div>
-                    </div>
-                    <div className="w-full p-2">
-                        <h2 className="text-xl mb-2 text-white p-1 bg-gray-700 rounded-sm">Lote del producto</h2>
                         <div className="mb-2">
-                            <LabelInput value="Precio de compra" />
+                            <LabelInput value="Precio de compra *" />
                             <TextInput
                                 {...register('purchasePrice')}
                                 error={!!errors.purchasePrice}
@@ -150,7 +158,7 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                                 placeholder="Precio de compra" />
                         </div>
                         <div className="mb-2">
-                            <LabelInput value="Stock inicial" />
+                            <LabelInput value="Stock inicial *" />
                             <TextInput
                                 {...register('initialQuantity')}
                                 error={!!errors.initialQuantity}
@@ -159,7 +167,7 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                                 placeholder="Stock inicial" />
                         </div>
                         <div className="mb-2">
-                            <LabelInput value="Fecha de ingreso al establecimiento." />
+                            <LabelInput value="Fecha de ingreso al establecimiento *" />
                             <TextInput
                                 {...register('receivedDate')}
                                 error={!!errors.receivedDate}
@@ -185,14 +193,79 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                                 type='date'
                                 placeholder="Fecha de caducidad" />
                         </div>
+                        <div className='mb-2 flex flex-col gap-2'>
+                            <LabelInput value='Costo por unidades'/>
+                            {lotUnitPurchases.map((item, index) => (
+                                <div
+                                    key={index}
+                                    className="border border-gray-200 rounded-lg p-4 shadow-sm bg-white relative"
+                                >
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700">
+                                                Precio de compra
+                                            </label>
+                                            <TextInput
+                                                type="number"
+                                                value={item.purchasePrice}
+                                                onChange={(e) =>
+                                                    updateLotUnitPurchase(index, "purchasePrice", e.target.value)
+                                                }
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700">
+                                                Cantidad
+                                            </label>
+                                            <TextInput
+                                                type="number"
+                                                value={item.purchaseQuantity}
+                                                onChange={(e) =>
+                                                    updateLotUnitPurchase(index, "purchaseQuantity", e.target.value)
+                                                }
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700">
+                                                Unidad
+                                            </label>
+                                            <SelectMenu
+                                                items={forSaleOptions}
+                                                value={item.unit}
+                                                onChange={(e) =>
+                                                    updateLotUnitPurchase(index, "unit", e.target.value)
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => removeLotUnitPurchase(index)}
+                                        className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                                    >
+                                        ✖
+                                    </button>
+                                </div>
+                            ))}
+                            <Button
+                            type='button'
+                                color='gray'
+                                onClick={addLotUnitPurchase}
+                            >
+                                + Agregar unidad de compra
+                            </Button>
+                        </div>
                     </div>
                 </div>
                 <div className="w-full p-2">
-                    <h2 className="text-xl mb-2 text-white p-1 bg-gray-700 rounded-sm">Inventario del producto</h2>
+                    <h2 className="text-xl mb-2 text-white p-1 bg-blue-700 rounded-sm">Inventario del producto</h2>
                     <div className="mb-2">
                         <div className="flex gap-2 mb-2">
-                            <LabelInput value="Código de barras interno" />
-                            <Button type='button' size="sm" color="yellow" onClick={()=> handleBarCodeMatch()}><TbExchange />User código universal</Button>
+                            <LabelInput value="Código de barras interno *" />
+                            <Button type='button' size="sm" color="yellow" onClick={() => handleBarCodeMatch()}><TbExchange />User código universal</Button>
                         </div>
                         <TextInput
                             {...register('internalBarCode')}
@@ -202,7 +275,7 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                             placeholder="Código de barra interno" />
                     </div>
                     <div className="mb-2">
-                        <LabelInput value="Precio de venta por menudeo" />
+                        <LabelInput value="Precio de venta por menudeo *" />
                         <TextInput
                             {...register('salePriceOne')}
                             error={!!errors.salePriceOne}
@@ -211,7 +284,7 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                             placeholder="Precio de menudeo" />
                     </div>
                     <div className="mb-2">
-                        <LabelInput value="Precio de venta por mayoreo" />
+                        <LabelInput value="Precio de venta por mayoreo *" />
                         <TextInput
                             {...register('salePriceMany')}
                             error={!!errors.salePriceMany}
@@ -220,7 +293,7 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                             placeholder="Precio de mayoreo" />
                     </div>
                     <div className="mb-2">
-                        <LabelInput value="Cantidad para mayoreo" />
+                        <LabelInput value="Cantidad para mayoreo *" />
                         <TextInput
                             {...register('saleQuantityMany')}
                             error={!!errors.saleQuantityMany}
@@ -230,7 +303,7 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                         />
                     </div>
                     <div className="mb-2">
-                        <LabelInput value="Precio especial" />
+                        <LabelInput value="Precio especial *" />
                         <TextInput
                             {...register('salePriceSpecial')}
                             error={!!errors.salePriceSpecial}
@@ -240,7 +313,7 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                         />
                     </div>
                     <div className="mb-2">
-                        <LabelInput value="Ubicación" htmlFor='location'/>
+                        <LabelInput value="Ubicación *" htmlFor='location' />
                         <SelectMenu id='location'
                             {...register('location')}
                             error={!!errors.location}
@@ -261,7 +334,7 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                             placeholder="Stock en ubicación" />
                     </div> */}
                     <div className="mb-2">
-                        <LabelInput value="Stock mínimo en esta sucursal" />
+                        <LabelInput value="Stock mínimo en esta sucursal *" />
                         <TextInput
                             {...register('minStockBranch')}
                             error={!!errors.minStockBranch}
@@ -270,7 +343,7 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                             placeholder="Stock min." />
                     </div>
                     <div className="mb-2">
-                        <LabelInput value="Stock máximo en la sucursal" />
+                        <LabelInput value="Stock máximo en la sucursal *" />
                         <TextInput
                             {...register('maxStockBranch')}
                             error={!!errors.maxStockBranch}
