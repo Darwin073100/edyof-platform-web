@@ -8,6 +8,7 @@ import { useProductStore } from "@/features/product/infraestructure/stores/produ
 import { LotEntity } from "@/features/lot/domain/entities/lot.entity";
 import { InventoryItemEntity } from "../domain/entities/inventory.entity";
 import { ProductWithLotInventoryItemDTO } from "@/features/product/application/dtos/product-with-lot-inventory-item.dto";
+import { useRouter } from "next/navigation";
 
 interface TableProductProps {
     productList: ProductEntity[];
@@ -15,6 +16,7 @@ interface TableProductProps {
 
 export function TableProduct({ productList }: TableProductProps) {
     const { searchCharacter } = useProductStore();
+    const router = useRouter();
 
     // Memoiza el mapeo de productos con lotes e inventario
     const productsWhitLots: ProductWithLotInventoryItemDTO[] = useMemo(() =>
@@ -36,6 +38,10 @@ export function TableProduct({ productList }: TableProductProps) {
             item.name.toLowerCase().includes(searchCharacter.toLowerCase())
         );
     }, [productsWhitLots, searchCharacter]);
+
+    const handleViewProduct = (productId: string) => {
+        router.push(`/products/${productId}`);
+    };
 
     const head = ['Cod. Bar. Uni.', 'Nombre', 'Stock', 'Ubi.', 'P. Com.', 'P. Uni.', 'P. May.', 'Categ.', 'Acciones'];
 
@@ -59,10 +65,14 @@ export function TableProduct({ productList }: TableProductProps) {
                             <td className="px-6 py-4">${item?.inventoryItem?.salePriceMany}</td>
                             <td className="px-6 py-4">{item?.category?.name}</td>
                             <td className="px-6 py-4 flex gap-2 items-center">
-                                <RoundedButton color="yellow" onClick={() => alert(item?.name)}>
+                                <RoundedButton 
+                                    color="yellow" 
+                                    onClick={() => handleViewProduct(item?.productId?.toString() || '')}
+                                    title="Ver detalles del producto"
+                                >
                                     <MdEditSquare />
                                 </RoundedButton>
-                                <RoundedButton color="red">
+                                <RoundedButton color="red" title="Eliminar producto">
                                     <AiFillDelete />
                                 </RoundedButton>
                             </td>
