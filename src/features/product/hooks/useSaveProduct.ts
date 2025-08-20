@@ -182,12 +182,12 @@ const useSaveProduct = () => {
     };
 
     const universalBarCode = watch('universalBarCode');
-    const handleBarCodeMatch = () => {
-        // Set internal bar code in the first inventory item
-        setValue('inventoryItems.0.internalBarCode', universalBarCode || '');
+    const handleBarCodeMatch = (index: number = 0) => {
+        // Set internal bar code in the specified inventory item (default to first one)
+        setValue(`inventoryItems.${index}.internalBarCode`, universalBarCode || '');
         // Also update the state
-        if (inventoryItems.length > 0) {
-            updateInventoryItem(0, 'internalBarCode', universalBarCode || '');
+        if (inventoryItems.length > index) {
+            updateInventoryItem(index, 'internalBarCode', universalBarCode || '');
         }
     }
 

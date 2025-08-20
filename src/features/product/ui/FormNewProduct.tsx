@@ -125,7 +125,7 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                                 items={seasonOptions} />
                         </div>
                         <div className="mb-2">
-                            <LabelInput value="Unidad de medida *" htmlFor='unitOfMeasure' />
+                            <LabelInput value="Unidad de medida para ventas *" htmlFor='unitOfMeasure' />
                             <SelectMenu id='unitOfMeasure'
                                 {...register('unitOfMeasure')}
                                 error={!!errors.unitOfMeasure}
@@ -330,11 +330,9 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                                     <div>
                                         <div className="flex gap-2 mb-2">
                                             <LabelInput value="Código de barras interno *" />
-                                            {index === 0 && (
-                                                <Button type='button' size="sm" color="yellow" onClick={() => handleBarCodeMatch()}>
-                                                    <TbExchange />Usar código universal
-                                                </Button>
-                                            )}
+                                            <Button type='button' size="sm" color="yellow" onClick={() => handleBarCodeMatch(index)}>
+                                                <TbExchange />Usar código universal
+                                            </Button>
                                         </div>
                                         <TextInput
                                             type="text"
