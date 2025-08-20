@@ -2,7 +2,7 @@ import { SeasonEntity } from "@/features/season/domain/entities/season.entity";
 import { CategoryEntity } from "../../../category/domain/entities/category.entity";
 import { BrandEntity } from "@/features/brand/domain/entities/brand.entity";
 import { LotEntity } from "../../../lot/domain/entities/lot.entity";
-import { InventoryItemEntity } from "../../../inventory/domain/entities/inventory.entity";
+import { InventoryResponseDTO } from "../../../inventory/domain/entities/inventory-response.dto";
 
 export interface ProductEntity {
   productId: bigint;
@@ -21,7 +21,7 @@ export interface ProductEntity {
   brand?: BrandEntity | null;
   category?: CategoryEntity | null;
   lots?: LotEntity[] | null;
-  inventoryItems?: InventoryItemEntity[]|null;
+  inventoryItems?: InventoryResponseDTO[]|null;
   createdAt: Date;
   updatedAt: Date | null;
   deletedAt: Date | null;

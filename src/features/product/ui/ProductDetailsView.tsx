@@ -130,14 +130,14 @@ export function ProductDetailsView({ product }: Props) {
                                 </div>
 
                                 {/* Información de Inventario para este lote */}
-                                {lot.inventoryItems && lot.inventoryItems.length > 0 && (
+                                {lot.inventories && lot.inventories.length > 0 && (
                                     <div className="mt-4">
                                         <div className="flex items-center gap-2 mb-3">
                                             <div className="w-2 h-6 bg-gradient-to-b from-indigo-500 to-purple-500 rounded-r-sm"></div>
                                             <h4 className="font-bold text-indigo-700 text-lg">📋 Inventario</h4>
                                         </div>
                                         <div className="space-y-3">
-                                            {lot.inventoryItems.map((inventory) => (
+                                            {lot.inventories.map((inventory) => (
                                                 <div key={inventory.inventoryItemId} className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-4 border-2 border-indigo-200 shadow-sm">
                                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                                                         <div className="bg-white rounded-md p-2 border-l-3 border-blue-400">

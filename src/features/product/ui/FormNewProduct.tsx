@@ -25,8 +25,9 @@ interface Props {
 
 const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
     const {
-        errors, floatMessageState, handleSubmit, isLoading, addLotUnitPurchase,removeLotUnitPurchase,
-        onSubmit, register, handleBarCodeMatch, updateLotUnitPurchase, lotUnitPurchases
+        errors, floatMessageState, handleSubmit, isLoading, addLotUnitPurchase, removeLotUnitPurchase,
+        onSubmit, register, handleBarCodeMatch, updateLotUnitPurchase, lotUnitPurchases,
+        addInventoryItem, removeInventoryItem, updateInventoryItem, inventoryItems
     } = useSaveProduct();
 
     const { categories, setCategories } = useCategoryStore();
@@ -67,6 +68,10 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
     return (
         <>
             <form onSubmit={handleSubmit(onSubmit)}>
+                {/* Campos ocultos para IDs del workspace */}
+                <input type="hidden" {...register('establishmentId')} />
+                <input type="hidden" {...register('branchOfficeId')} />
+                
                 <div className="w-full flex md:flex-row sm:flex-col max-sm:flex-col min-md:justify-between">
                     <div className="w-full p-2">
                         <h2 className="text-xl mb-2 text-white p-1 bg-blue-700 rounded-sm">Producto</h2>
@@ -211,7 +216,7 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                                                 type="number"
                                                 value={item.purchasePrice}
                                                 onChange={(e) =>
-                                                    updateLotUnitPurchase(index, "purchasePrice", e.target.value)
+                                                    updateLotUnitPurchase(index, "purchasePrice", Number(e.target.value))
                                                 }
                                                 error={!!(errors.lotUnitPurchases?.[index]?.purchasePrice)}
                                                 errorMessage={errors.lotUnitPurchases?.[index]?.purchasePrice?.message}
@@ -225,7 +230,7 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                                                 type="number"
                                                 value={item.purchaseQuantity}
                                                 onChange={(e) =>
-                                                    updateLotUnitPurchase(index, "purchaseQuantity", e.target.value)
+                                                    updateLotUnitPurchase(index, "purchaseQuantity", Number(e.target.value))
                                                 }
                                                 error={!!(errors.lotUnitPurchases?.[index]?.purchaseQuantity)}
                                                 errorMessage={errors.lotUnitPurchases?.[index]?.purchaseQuantity?.message}
@@ -245,9 +250,21 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                                                 errorMessage={errors.lotUnitPurchases?.[index]?.unit?.message}
                                             />
                                         </div>
-                                    </div>
 
-                                    {lotUnitPurchases.length > 1 && (
+                                        <div>
+                                            <LabelInput value="Unidades compradas *" />
+                                            <TextInput
+                                                type="number"
+                                                value={item.unitsInPurchaseUnit}
+                                                onChange={(e) =>
+                                                    updateLotUnitPurchase(index, "unitsInPurchaseUnit", Number(e.target.value))
+                                                }
+                                                error={!!(errors.lotUnitPurchases?.[index]?.unitsInPurchaseUnit)}
+                                                errorMessage={errors.lotUnitPurchases?.[index]?.unitsInPurchaseUnit?.message}
+                                                placeholder="0"
+                                            />
+                                        </div>
+                                    </div>
                                         <button
                                             type="button"
                                             onClick={() => removeLotUnitPurchase(index)}
@@ -256,7 +273,6 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                                         >
                                             ✖
                                         </button>
-                                    )}
                                 </div>
                             ))}
                             <Button
@@ -271,18 +287,103 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                 </div>
                 <div className="w-full p-2">
                     <h2 className="text-xl mb-2 text-white p-1 bg-blue-700 rounded-sm">Inventario del producto</h2>
-                    <div className="mb-2">
-                        <div className="flex gap-2 mb-2">
-                            <LabelInput value="Código de barras interno *" />
-                            <Button type='button' size="sm" color="yellow" onClick={() => handleBarCodeMatch()}><TbExchange />User código universal</Button>
-                        </div>
-                        <TextInput
-                            {...register('internalBarCode')}
-                            error={!!errors.internalBarCode}
-                            errorMessage={errors.internalBarCode?.message}
-                            type='text'
-                            placeholder="Código de barra interno" />
+                    
+                    <div className='mb-2 flex flex-col gap-2'>
+                        <LabelInput value='Ubicaciones del inventario *'/>
+                        {/* Mostrar error general del array si existe */}
+                        {errors.inventoryItems && typeof errors.inventoryItems.message === 'string' && (
+                            <p className="text-red-500 text-sm">{errors.inventoryItems.message}</p>
+                        )}
+                        {inventoryItems.map((item, index) => (
+                            <div
+                                key={index}
+                                className="border border-gray-200 rounded-lg p-4 shadow-sm bg-white relative"
+                            >
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <div>
+                                        <LabelInput value="Ubicación *" />
+                                        <SelectMenu
+                                            items={locationOptions}
+                                            value={item.location}
+                                            onChange={(e) =>
+                                                updateInventoryItem(index, "location", e.target.value)
+                                            }
+                                            error={!!(errors.inventoryItems?.[index]?.location)}
+                                            errorMessage={errors.inventoryItems?.[index]?.location?.message}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <LabelInput value="Cantidad en ubicación *" />
+                                        <TextInput
+                                            type="number"
+                                            value={item.quantityOnHand}
+                                            onChange={(e) =>
+                                                updateInventoryItem(index, "quantityOnHand", Number(e.target.value))
+                                            }
+                                            error={!!(errors.inventoryItems?.[index]?.quantityOnHand)}
+                                            errorMessage={errors.inventoryItems?.[index]?.quantityOnHand?.message}
+                                            placeholder="0"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <div className="flex gap-2 mb-2">
+                                            <LabelInput value="Código de barras interno *" />
+                                            {index === 0 && (
+                                                <Button type='button' size="sm" color="yellow" onClick={() => handleBarCodeMatch()}>
+                                                    <TbExchange />Usar código universal
+                                                </Button>
+                                            )}
+                                        </div>
+                                        <TextInput
+                                            type="text"
+                                            value={item.internalBarCode}
+                                            onChange={(e) =>
+                                                updateInventoryItem(index, "internalBarCode", e.target.value)
+                                            }
+                                            error={!!(errors.inventoryItems?.[index]?.internalBarCode)}
+                                            errorMessage={errors.inventoryItems?.[index]?.internalBarCode?.message}
+                                            placeholder="Código de barra interno"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <LabelInput value="Precio de compra en stock *" />
+                                        <TextInput
+                                            type="number"
+                                            value={item.purchasePriceAtStock}
+                                            onChange={(e) =>
+                                                updateInventoryItem(index, "purchasePriceAtStock", Number(e.target.value))
+                                            }
+                                            error={!!(errors.inventoryItems?.[index]?.purchasePriceAtStock)}
+                                            errorMessage={errors.inventoryItems?.[index]?.purchasePriceAtStock?.message}
+                                            placeholder="0.00"
+                                        />
+                                    </div>
+                                </div>
+                                
+                                {inventoryItems.length > 1 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => removeInventoryItem(index)}
+                                        className="absolute top-2 right-2 text-red-500 hover:text-red-700 text-lg font-bold w-6 h-6 flex items-center justify-center"
+                                        title="Eliminar ubicación"
+                                    >
+                                        ✖
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                        <Button
+                            type='button'
+                            color='gray'
+                            onClick={addInventoryItem}
+                        >
+                            + Agregar ubicación
+                        </Button>
                     </div>
+
                     <div className="mb-2">
                         <LabelInput value="Precio de venta por menudeo *" />
                         <TextInput
@@ -321,27 +422,6 @@ const FormNewProduct = ({ categoryList, brandList, seasonList }: Props) => {
                             placeholder="Precio especial"
                         />
                     </div>
-                    <div className="mb-2">
-                        <LabelInput value="Ubicación *" htmlFor='location' />
-                        <SelectMenu id='location'
-                            {...register('location')}
-                            error={!!errors.location}
-                            errorMessage={errors.location?.message}
-                            items={locationOptions}
-                        />
-                    </div>
-                    {/* <div className="mb-2">
-                        <div className="flex gap-2 mb-2">
-                            <LabelInput value="Stock para la ubicacion actual." />
-                            <Button size="sm" color="yellow"><TbExchange />Todo el stock para esta ubicacion.</Button>
-                        </div>
-                        <TextInput
-                            {...register('quantityOnHan')}
-                            error={!!errors.quantityOnHan}
-                            errorMessage={errors.quantityOnHan?.message}
-                            type='number'
-                            placeholder="Stock en ubicación" />
-                    </div> */}
                     <div className="mb-2">
                         <LabelInput value="Stock mínimo en esta sucursal *" />
                         <TextInput

@@ -1,13 +1,13 @@
 import { create } from "zustand";
-import { InventoryItemEntity } from "../domain/entities/inventory.entity";
+import { InventoryResponseDTO } from "../domain/entities/inventory-response.dto";
 import { useEffect } from "react";
 
 type State = {
     searchCharacter: string,
     // filterInventary: InventoryItemEntity[]|[],
-    items: InventoryItemEntity[]|[],
-    setItems: (value: InventoryItemEntity[])=> void,
-    item: InventoryItemEntity|null,
+    items: InventoryResponseDTO[]|[],
+    setItems: (value: InventoryResponseDTO[])=> void,
+    item: InventoryResponseDTO|null,
     openModal: boolean,
     setOpenModal: (value:boolean)=> void
 };

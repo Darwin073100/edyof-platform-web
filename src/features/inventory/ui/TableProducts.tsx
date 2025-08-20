@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import { ProductEntity } from "@/features/product/domain/entities/product.entity";
 import { useProductStore } from "@/features/product/infraestructure/stores/product.store";
 import { LotEntity } from "@/features/lot/domain/entities/lot.entity";
-import { InventoryItemEntity } from "../domain/entities/inventory.entity";
+import { InventoryResponseDTO } from "../domain/entities/inventory-response.dto";
 import { ProductWithLotInventoryItemDTO } from "@/features/product/application/dtos/product-with-lot-inventory-item.dto";
 import { useRouter } from "next/navigation";
 
@@ -22,10 +22,10 @@ export function TableProduct({ productList }: TableProductProps) {
     const productsWhitLots: ProductWithLotInventoryItemDTO[] = useMemo(() =>
         productList.flatMap((product: ProductEntity) =>
             product.lots?.flatMap((lot: LotEntity) =>
-                lot.inventoryItems.map((inventory: InventoryItemEntity) => ({
+                lot.inventories.map((inventory: InventoryResponseDTO) => ({
                     ...product,
-                    lot,
-                    inventoryItem: inventory
+                    lot: [lot],
+                    inventoryItems: [inventory]
                 }))
             ) || []
         ), [productList]
@@ -58,11 +58,11 @@ export function TableProduct({ productList }: TableProductProps) {
                         <tr className="bg-white border-b border-gray-200" key={item?.productId}>
                             <td className="px-6 py-4">{item?.universalBarCode}</td>
                             <td className="px-6 py-4">{item?.name}</td>
-                            <td className="px-6 py-4">{item?.lot?.initialQuantity}</td>
-                            <td className="px-6 py-4">{item?.inventoryItem?.location.toUpperCase()}</td>
+                            <td className="px-6 py-4">{item?.brand?.name}</td>
+                            {/* <td className="px-6 py-4">{item?.inventoryItem?.location.toUpperCase()}</td>
                             <td className="px-6 py-4">${item?.lot?.purchasePrice}</td>
                             <td className="px-6 py-4">${item?.inventoryItem?.salePriceOne}</td>
-                            <td className="px-6 py-4">${item?.inventoryItem?.salePriceMany}</td>
+                            <td className="px-6 py-4">${item?.inventoryItem?.salePriceMany}</td> */}
                             <td className="px-6 py-4">{item?.category?.name}</td>
                             <td className="px-6 py-4 flex gap-2 items-center">
                                 <RoundedButton 

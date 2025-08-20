@@ -1,13 +1,13 @@
 import { ErrorEntity } from "@/shared/features/error.entity";
 import { Result } from "@/shared/features/result";
-import { InventoryItemEntity } from "../domain/entities/inventory.entity";
+import { InventoryResponseDTO } from "../domain/entities/inventory-response.dto";
 import { InventoryItemRepository } from "../domain/repositories/inventory-item.repository";
 import { RegisterInventoryItemDTO } from "../application/dtos/register-inventory-item.dto";
 
 export class InventoryItemFetchRepositoryImpl implements InventoryItemRepository {
     private readonly URL = `${process.env.URL_EDYOF_PLATFORM_API}${process.env.PREFIX_EDYOF_PLATFORM_API}/inventory-items`;
    
-    async viewAllInventoryItem(): Promise<Result<{ inventoryItems: InventoryItemEntity[] }, ErrorEntity>> {
+    async viewAllInventoryItem(): Promise<Result<{ inventoryItems: InventoryResponseDTO[] }, ErrorEntity>> {
         try {
             const response = await fetch(`${this.URL}`,{
                 method: 'GET'
@@ -18,7 +18,7 @@ export class InventoryItemFetchRepositoryImpl implements InventoryItemRepository
                 return Result.failure(error);
             }
 
-            const inventory = await response.json() as { inventoryItems: InventoryItemEntity[] };
+            const inventory = await response.json() as { inventoryItems: InventoryResponseDTO[] };
             return Result.success(inventory);
 
         } catch (error: any) {
@@ -32,7 +32,7 @@ export class InventoryItemFetchRepositoryImpl implements InventoryItemRepository
         }
     }
 
-    async save(dto: RegisterInventoryItemDTO): Promise<Result<InventoryItemEntity, ErrorEntity>> {
+    async save(dto: RegisterInventoryItemDTO): Promise<Result<InventoryResponseDTO, ErrorEntity>> {
         try {
             const response = await fetch(`${this.URL}`,{
                 method: 'POST',
@@ -47,7 +47,7 @@ export class InventoryItemFetchRepositoryImpl implements InventoryItemRepository
                 return Result.failure(error);
             }
 
-            const inventory = await response.json() as InventoryItemEntity;
+            const inventory = await response.json() as InventoryResponseDTO;
             return Result.success(inventory);
 
         } catch (error: any) {

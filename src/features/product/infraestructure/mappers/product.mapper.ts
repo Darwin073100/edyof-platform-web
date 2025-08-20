@@ -6,39 +6,53 @@ export class ProductMapper{
      * Este metodo es usado para convertir la información ingresada en el formulario, a informacion que sea compatible con los JSONs del request
      * es informacion de Product, Lot e InventoryItem 
      */
-    static toHttpMany(dto: RegisterInitialProductDTO){
-        const result:RegisterInitialProductHttpDTO = {
-            branchOfficeId: dto.branchOfficeId,
-            name: dto.name,
-            description: dto.description,
+    static toHttpMany(dto: RegisterInitialProductDTO): RegisterInitialProductHttpDTO {
+        const result: RegisterInitialProductHttpDTO = {
+            // Product
+            establishmentId: dto.establishmentId,
             categoryId: dto.categoryId,
             brandId: dto.brandId,
             seasonId: dto.seasonId,
+            name: dto.name,
+            description: dto.description,
             universalBarCode: dto.universalBarCode,
             unitOfMeasure: dto.unitOfMeasure,
             minStockGlobal: dto.minStockGlobal,
             imageUrl: dto.imageUrl,
+            
+            // Lot
             lotNumber: dto.lotNumber,
             purchasePrice: dto.purchasePrice,
-            purchasePriceAtStock: dto.purchasePriceAtStock,
             initialQuantity: dto.initialQuantity,
             purchaseUnit: dto.purchaseUnit,
-            lotUnitPurchases: dto.lotUnitPurchases,
+            expirationDate: dto.expirationDate?.toJSON() || null,
+            manufacturingDate: dto.manufacturingDate?.toJSON() || null,
+            receivedDate: dto.receivedDate.toJSON(),
+            lotUnitPurchases: dto.lotUnitPurchases?.map(purchase => ({
+                purchasePrice: purchase.purchasePrice,
+                purchaseQuantity: purchase.purchaseQuantity,
+                unit: purchase.unit,
+                unitsInPurchaseUnit: purchase.unitsInPurchaseUnit
+            })) || null,
+            
+            // InventoryItem
+            branchOfficeId: dto.branchOfficeId,
             isSellable: dto.isSellable,
-            location: dto.location,
-            internalBarCode: dto.internalBarCode,
-            maxStockBranch: dto.maxStockBranch,
-            minStockBranch: dto.minStockBranch,
             salePriceOne: dto.salePriceOne,
             salePriceMany: dto.salePriceMany,
             salePriceSpecial: dto.salePriceSpecial,
             saleQuantityMany: dto.saleQuantityMany,
-            establishmentId: dto.establishmentId,
-            quantityOnHand: dto.quantityOnHand,
-            expirationDate: dto.expirationDate?.toJSON(),
-            manufacturingDate: dto.manufacturingDate?.toJSON(),
-            receivedDate: dto.receivedDate.toJSON(),
-            lastStockedAt: dto.lastStockedAt.toJSON(),
+            minStockBranch: dto.minStockBranch,
+            maxStockBranch: dto.maxStockBranch,
+            
+            // Inventory Items array
+            inventoryItems: dto.inventoryItems?.map(item => ({
+                location: item.location,
+                quantityOnHand: item.quantityOnHand,
+                lastStockedAt: item.lastStockedAt.toJSON(),
+                purchasePriceAtStock: item.purchasePriceAtStock,
+                internalBarCode: item.internalBarCode
+            })) || null
         };
         return result;
     }

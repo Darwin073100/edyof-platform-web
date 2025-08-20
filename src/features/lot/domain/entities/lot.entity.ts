@@ -1,4 +1,4 @@
-import { InventoryItemEntity } from "@/features/inventory/domain/entities/inventory.entity";
+import { InventoryResponseDTO } from "@/features/inventory/domain/entities/inventory-response.dto";
 import { ProductEntity } from "../../../product/domain/entities/product.entity";
 import { ForSaleEnum } from "@/features/product/domain/enums/for-sale.enum";
 import { LotUnitPurchaseEntity } from "./lot-unit-purchase.entity";
@@ -14,7 +14,7 @@ export interface LotEntity {
   manufacturingDate? : Date | null;
   product?           : ProductEntity | null;
   receivedDate       : Date;
-  inventoryItems     : InventoryItemEntity[];
+  inventories        : InventoryResponseDTO[];
   lotUnitPurchases?  : LotUnitPurchaseEntity[]|null,
   createdAt          : Date;
   updatedAt?         : Date | null;

@@ -4,4 +4,5 @@ export interface RegisterLotUnitPurchaseDTO{
       purchasePrice: number;
       purchaseQuantity: number;
       unit: ForSaleEnum;
+      unitsInPurchaseUnit: number;
 }
