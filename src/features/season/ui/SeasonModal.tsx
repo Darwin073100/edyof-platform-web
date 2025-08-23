@@ -12,6 +12,7 @@ import { MdCleaningServices } from 'react-icons/md';
 import { SeasonEntity } from '../domain/entities/season.entity';
 import { useSeasonModal } from '../hooks/useSeasonModal';
 import { SeasonTable } from './SeasonTable';
+import { useDeleteSeason } from '../hooks/useDeleteSeason';
 
 interface Props{
     seasonList: SeasonEntity[]
@@ -25,11 +26,11 @@ const SeasonModal = ({ seasonList }: Props) => {
         onSubmit, resetForm,errors,
     } = useSeasonModal({seasonList});
     
-    
+    const { floatMessageState: deleteFloatMessage } = useDeleteSeason();
 
     return (
         <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
-            <div className='w-[500px] text-gray-700 flex flex-col items-center gap-2 bg-white p-4 rounded-md'>
+            <div className='w-[650px] text-gray-700 flex flex-col items-center gap-2 bg-white p-4 rounded-md'>
                 <form onSubmit={handleSubmit(onSubmit)} className="w-full text-gray-700 flex flex-col items-center gap-2 bg-white p-4">
                     <div className="w-full flex justify-between items-center gap-2">
                         <h2 className="text-lg font-semibold">Temporadas de productos</h2>
@@ -75,6 +76,14 @@ const SeasonModal = ({ seasonList }: Props) => {
                 summary={floatMessageState.summary}
                 type={floatMessageState.type}
                 isActive={floatMessageState.isActive} />
+            
+            {/* Mensaje de eliminación */}
+            <FloatMessage
+                key={deleteFloatMessage.summary}
+                description={deleteFloatMessage.description}
+                summary={deleteFloatMessage.summary}
+                type={deleteFloatMessage.type}
+                isActive={deleteFloatMessage.isActive} />
         </Modal >
     )
 }

@@ -25,8 +25,6 @@ export class BrandFetchRepositoryImpl implements BrandRepository {
             const brand = await result.json() as BrandEntity;
             return Result.success(brand)
         } catch (error: any) {
-            console.log(error);
-
             return Result.failure({
                 error: error?.message || error,
                 message: 'No se pudo conectar al backend',

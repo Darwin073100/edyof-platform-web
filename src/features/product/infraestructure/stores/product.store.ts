@@ -23,10 +23,12 @@ export const useProductStore = create<State>()((set, get)=>({
     products:[],
     productsFiltered:[],
     setProducts(value) {
-        set(()=> ({products: value}))
+        const validProducts = Array.isArray(value) ? value : [];
+        set(()=> ({products: validProducts}))
     },
     setProductsFiltered(value) {
-        set(()=> ({productsFiltered: value}))
+        const validProductsFiltered = Array.isArray(value) ? value : [];
+        set(()=> ({productsFiltered: validProductsFiltered}))
     },
     setProduct: (product)=> set(()=> ({product})),
     openModal: false,

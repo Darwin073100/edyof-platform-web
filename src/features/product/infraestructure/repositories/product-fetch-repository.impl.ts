@@ -83,7 +83,6 @@ export class ProductFetchRepositoryImpl implements ProductRepository{
             return Result.success(inventory);
     
         } catch (error: any) {
-            console.log(error)
             return Result.failure({
                 error: error?.message || error,
                 message: 'No se pudo conectar al servidor: Product',

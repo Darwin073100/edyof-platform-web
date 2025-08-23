@@ -17,40 +17,67 @@ import { SeasonModal } from "@/features/season/ui/SeasonModal";
 import { viewAllSeasonsAction } from "@/features/season/actions/view-all-seasons.action";
 import { ProtectedRoute } from "@/ui/components/routes/ProtectedRoute";
 
+// Configurar la página para que no se cachée y siempre obtenga datos frescos
+export const revalidate = 0; // Revalidar en cada request
+export const dynamic = 'force-dynamic'; // Forzar renderizado dinámico
+
 export const metadata:Metadata = {
     title: 'Productos'
 }
 
 export default async function ProductsPage() {
 
-    // Llama al server action en el servidor
-    const inventoryItemsData = await viewAllProductsAction();
-    const items = inventoryItemsData.ok ? inventoryItemsData.value?.products ?? [] : [];
-    const viewAllCategories = await ViewAllCategoriesAction();
-    const categories = viewAllCategories.ok ? viewAllCategories.value?.categories ?? [] : [];
-    const viewAllBrands = await viewAllBrandsAction();
-    const brandItems = viewAllBrands.ok ? viewAllBrands.value?.brands ?? [] : [];
-    const viewAllSeasons = await viewAllSeasonsAction();
-    const seasonItems = viewAllSeasons.ok ? viewAllSeasons.value?.seasons ?? [] : [];
-    
+    // Llama al server action en el servidor con manejo de errores
+    try {
+        const inventoryItemsData = await viewAllProductsAction();
+        const items = inventoryItemsData?.ok && inventoryItemsData.value?.products ? inventoryItemsData.value.products : [];
+        
+        const viewAllCategories = await ViewAllCategoriesAction();
+        const categories = viewAllCategories?.ok && viewAllCategories.value?.categories ? viewAllCategories.value.categories : [];
+        
+        const viewAllBrands = await viewAllBrandsAction();
+        const brandItems = viewAllBrands?.ok && viewAllBrands.value?.brands ? viewAllBrands.value.brands : [];
+        
+        const viewAllSeasons = await viewAllSeasonsAction();
+        const seasonItems = viewAllSeasons?.ok && viewAllSeasons.value?.seasons ? viewAllSeasons.value.seasons : [];
+        
 
-    return (
-        <ProtectedRoute>
-            <main className="flex flex-col gap-4 w-full">
-            <ProductActionsBar/>
-            <ProductSearch/>
-            <h1 className="text-xl">Lista de productos</h1>
-            <TableProduct 
-                productList={items}/>
-            <CategoryModal
-                categoryList={ categories }
-            />
-            <BrandModal 
-                brandList={ brandItems }
-            />
-            <SeasonModal
-                seasonList={ seasonItems }/>
-        </main>
-        </ProtectedRoute>
-    );
+        return (
+            <ProtectedRoute>
+                <main className="flex flex-col gap-4 w-full">
+                <ProductActionsBar/>
+                <ProductSearch/>
+                <h1 className="text-xl">Lista de productos</h1>
+                <TableProduct 
+                    productList={items}/>
+                <CategoryModal
+                    categoryList={ categories }
+                />
+                <BrandModal 
+                    brandList={ brandItems }
+                />
+                <SeasonModal
+                    seasonList={ seasonItems }/>
+            </main>
+            </ProtectedRoute>
+        );
+    } catch (error) {
+        console.error('Error loading products page:', error);
+        return (
+            <ProtectedRoute>
+                <main className="flex flex-col gap-4 w-full">
+                    <ProductActionsBar/>
+                    <ProductSearch/>
+                    <h1 className="text-xl">Lista de productos</h1>
+                    <div className="w-full bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        Error al cargar los productos. Por favor, recarga la página.
+                    </div>
+                    <TableProduct productList={[]}/>
+                    <CategoryModal categoryList={[]}/>
+                    <BrandModal brandList={[]}/>
+                    <SeasonModal seasonList={[]}/>
+                </main>
+            </ProtectedRoute>
+        );
+    }
 }

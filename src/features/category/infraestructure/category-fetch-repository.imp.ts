@@ -26,8 +26,6 @@ export class CategoryFetchRepositoryImpl implements CategoryRepository{
             const category = await result.json() as CategoryEntity;
             return Result.success(category)
         } catch (error: any) {
-            console.log(error);
-            
             return Result.failure({
                 error: error?.message || error,
                 message: 'No se pudo conectar al backend',

@@ -60,7 +60,6 @@ export const InitAcountForm = () => {
             username: data.username,
             phoneNumber: data.phoneNumber
         };
-        console.log(userWithEmployee);
 
         resp = await registerUserWithEmployeeAction(userWithEmployee);
 

@@ -11,23 +11,23 @@ interface Props {
 
 export function ProductDetailsView({ product }: Props) {
     const handleAddLot = () => {
-        console.log('Agregar nuevo lote');
+        // Agregar nuevo lote
     };
 
     const handleAddLotUnitPurchase = (lotId: string) => {
-        console.log('Agregar lot-unit-purchase para lote:', lotId);
+        // Agregar lot-unit-purchase para lote
     };
 
     const handleAddInventory = (lotId: string) => {
-        console.log('Agregar inventario para lote:', lotId);
+        // Agregar inventario para lote
     };
 
     const handleAddInventoryItem = (inventoryId: string) => {
-        console.log('Agregar item de inventario para inventario:', inventoryId);
+        // Agregar item de inventario para inventario
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
             {/* Información General del Producto */}
             <div className="bg-white rounded-lg shadow-sm p-6">
                 <h2 className="text-xl mb-4 text-white p-2 bg-blue-700 rounded-sm flex items-center gap-2">

@@ -63,7 +63,6 @@ export const authOptions: NextAuthOptions = {
             password: credentials.password,
           };
 
-          console.log('🔐 Intentando login con:', { email: credentials.email });
           const loginResult = await authLoginAction(loginDTO);
 
           if (!loginResult.ok || !loginResult.value) {
@@ -74,7 +73,6 @@ export const authOptions: NextAuthOptions = {
           }
 
           const accessToken = loginResult.value.accessToken;
-          console.log('✅ Login exitoso, obteniendo workspace info...');
 
           // Obtener la información del workspace usando el accessToken
           const workspaceResult = await userWorkspaceAction({ accessToken });
@@ -88,7 +86,6 @@ export const authOptions: NextAuthOptions = {
           }
 
           const workspace = workspaceResult.value;
-          console.log('✅ Workspace obtenido exitosamente');
 
           // Retornar el usuario con toda la información necesaria
           return {

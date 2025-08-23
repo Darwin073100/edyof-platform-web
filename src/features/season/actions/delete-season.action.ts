@@ -1,20 +1,19 @@
 'use server'
 import { revalidatePath } from 'next/cache';
-import { RegisterSeasonDTO } from "../application/dtos/register-season.dto";
-import { RegisterSeasonUseCase } from "../application/use-case/register-season.use-case";
+import { DeleteSeasonUseCase } from "../application/use-case/delete-season.use-case";
 import { SeasonFetchRepositoryImpl } from "../infraestructure/repositories/season-fetch-repository.impl";
 
-export async function registerSeasonAction(dto: RegisterSeasonDTO){
+export async function deleteSeasonAction(seasonId: bigint){
     const seasonFetchRepositoryImpl = new SeasonFetchRepositoryImpl();
-    const registerSeasonUseCase = new RegisterSeasonUseCase(seasonFetchRepositoryImpl);
+    const deleteSeasonUseCase = new DeleteSeasonUseCase(seasonFetchRepositoryImpl);
 
-    const result = await registerSeasonUseCase.execute(dto);
-    
+    const result = await deleteSeasonUseCase.execute(seasonId);
+
     // Invalidar el caché de la página de productos para que se actualicen los datos
     if (result?.ok) {
         revalidatePath('/products');
     }
-    
+
     return {
         ...result
     }

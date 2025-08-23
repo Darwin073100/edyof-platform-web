@@ -23,7 +23,6 @@ export class LotFetchRepositoryImpl implements LotRepository {
             const season = await result.json() as LotEntity;
             return Result.success(season)
         } catch (error: any) {
-            console.log(error);
             return Result.failure({
                 error: error?.message || error,
                 message: 'No se pudo conectar al servidor: Lot',

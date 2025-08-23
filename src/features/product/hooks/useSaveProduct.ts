@@ -255,7 +255,6 @@ const useSaveProduct = () => {
                 internalBarCode: item.internalBarCode
             })) || []
         }
-        console.log(newProduct)
 
         productResult = await registerInitialProductAction(newProduct);
 

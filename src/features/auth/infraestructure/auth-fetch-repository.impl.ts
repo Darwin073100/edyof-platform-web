@@ -25,8 +25,6 @@ export class AuthFetchRepositoryImpl implements AuthRepository {
             const accessToken = await result.json() as AuthAccesTokenDTO;
             return Result.success(accessToken);
         } catch (error:any) {
-            console.log(error);
-
             return Result.failure({
                 error: error?.message || error,
                 message: 'No se pudo conectar al backend',
@@ -68,8 +66,6 @@ export class AuthFetchRepositoryImpl implements AuthRepository {
             const workspaceData = await result.json() as UserWorkspaceResponseDTO;
             return Result.success(workspaceData);
         } catch (error:any) {
-            console.log('Error en userWorkspace:', error);
-
             return Result.failure({
                 error: error?.message || error,
                 message: 'No se pudo conectar al backend para obtener información del workspace',

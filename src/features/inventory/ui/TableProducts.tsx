@@ -14,34 +14,71 @@ interface TableProductProps {
     productList: ProductEntity[];
 }
 
-export function TableProduct({ productList }: TableProductProps) {
+export function TableProduct({ productList = [] }: TableProductProps) {
     const { searchCharacter } = useProductStore();
     const router = useRouter();
 
+    // Validación temprana de props
+    if (!productList || !Array.isArray(productList)) {
+        return (
+            <div className="w-full bg-gray-100 p-4 text-center">
+                No hay productos disponibles
+            </div>
+        );
+    }
+
     // Memoiza el mapeo de productos con lotes e inventario
-    const productsWhitLots: ProductWithLotInventoryItemDTO[] = useMemo(() =>
-        productList.flatMap((product: ProductEntity) =>
-            product.lots?.flatMap((lot: LotEntity) =>
-                lot.inventories.map((inventory: InventoryResponseDTO) => ({
+    const productsWhitLots: ProductWithLotInventoryItemDTO[] = useMemo(() => {
+        if (!productList || !Array.isArray(productList)) return [];
+        
+        return productList.flatMap((product: ProductEntity) => {
+            // Verificar que el producto existe y tiene lotes
+            if (!product || !product.lots || !Array.isArray(product.lots)) {
+                return [];
+            }
+            
+            return product.lots.flatMap((lot: LotEntity) => {
+                // Verificar que el lote existe y tiene inventarios
+                if (!lot || !lot.inventories || !Array.isArray(lot.inventories)) {
+                    return [];
+                }
+                
+                return lot.inventories.map((inventory: InventoryResponseDTO) => ({
                     ...product,
                     lot: [lot],
-                    inventoryItems: [inventory]
-                }))
-            ) || []
-        ), [productList]
-    );
+                    inventories: inventory
+                }));
+            });
+        });
+    }, [productList]);
 
     // Memoiza el filtrado por nombre
     const filteredProducts = useMemo(() => {
-        if (!searchCharacter) return productsWhitLots;
-        return productsWhitLots.filter(item =>
+        if (!productsWhitLots || !Array.isArray(productsWhitLots)) return [];
+        if (!searchCharacter) {
+            return productsWhitLots;
+        }
+        
+        const filtered = productsWhitLots.filter(item => 
+            item && item.name && 
             item.name.toLowerCase().includes(searchCharacter.toLowerCase())
         );
+        
+        return filtered;
     }, [productsWhitLots, searchCharacter]);
 
     const handleViewProduct = (productId: string) => {
         router.push(`/products/${productId}`);
     };
+
+    // Debug: productos finales que se van a renderizar
+    const finalProducts = filteredProducts?.filter(item => {
+        // Filtrar elementos que no estén eliminados (soft delete)
+        if (!item) return false;
+        if (item.deletedAt) return false;
+        if (item.deletedAt !== null && item.deletedAt !== undefined) return false;
+        return true;
+    }) || [];
 
     const head = ['Cod. Bar. Uni.', 'Nombre', 'Stock', 'Ubi.', 'P. Com.', 'P. Uni.', 'P. May.', 'Categ.', 'Acciones'];
 
@@ -54,16 +91,16 @@ export function TableProduct({ productList }: TableProductProps) {
                     </tr>
                 </thead>
                 <tbody className="border-y border-gray-300">
-                    {filteredProducts.filter(item => !item?.deletedAt).map(item => (
-                        <tr className="bg-white border-b border-gray-200" key={item?.productId}>
-                            <td className="px-6 py-4">{item?.universalBarCode}</td>
-                            <td className="px-6 py-4">{item?.name}</td>
-                            <td className="px-6 py-4">{item?.brand?.name}</td>
-                            {/* <td className="px-6 py-4">{item?.inventoryItem?.location.toUpperCase()}</td>
-                            <td className="px-6 py-4">${item?.lot?.purchasePrice}</td>
-                            <td className="px-6 py-4">${item?.inventoryItem?.salePriceOne}</td>
-                            <td className="px-6 py-4">${item?.inventoryItem?.salePriceMany}</td> */}
-                            <td className="px-6 py-4">{item?.category?.name}</td>
+                    {finalProducts.map(item => (
+                        <tr className="bg-white border-b border-gray-200" key={item?.productId || Math.random()}>
+                            <td className="px-6 py-4">{item?.universalBarCode || '-'}</td>
+                            <td className="px-6 py-4">{item?.name || '-'}</td>
+                            <td className="px-6 py-4">{item?.inventories?.inventoryItems?.[0]?.quantityOnHan || 0}</td>
+                            <td className="px-6 py-4">{item?.inventories?.inventoryItems?.[0]?.location || '-'}</td>
+                            <td className="px-6 py-4">${item?.lot?.[0]?.purchasePrice || '0.00'}</td>
+                            <td className="px-6 py-4">${item?.inventories?.salePriceOne || '0.00'}</td>
+                            <td className="px-6 py-4">${item?.inventories?.salePriceMany || '0.00'}</td>
+                            <td className="px-6 py-4">{item?.category?.name || '-'}</td>
                             <td className="px-6 py-4 flex gap-2 items-center">
                                 <RoundedButton 
                                     color="yellow" 
@@ -80,7 +117,9 @@ export function TableProduct({ productList }: TableProductProps) {
                     ))}
                 </tbody>
             </table>
-            {filteredProducts.length === 0 && <div className="w-full bg-gray-100 p-4">No hay productos...</div>}
+            {(!finalProducts || finalProducts.length === 0) && (
+                <div className="w-full bg-gray-100 p-4">No hay productos...</div>
+            )}
         </div>
     )
 }

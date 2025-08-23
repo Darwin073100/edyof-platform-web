@@ -1,6 +1,7 @@
-'use cient'
+'use client'
 import * as yup from 'yup';
 import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 import { useCategoryStore } from "../infraestructure/category.store";
 import { FloatMessageType } from "@/shared/ui/types/FloatMessageType";
 import { CategoryEntity } from "../domain/entities/category.entity";
@@ -26,6 +27,7 @@ const useCategoryModal = ({ categoryList }: Props) => {
     const { setCategories, addCategory, category, setCategory, modalOpen, setModalOpen } = useCategoryStore();
     const [floatMessageState, setFloatMessageState] = useState<FloatMessageType>({});
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
 
     const handleOpenModal = () => {
         setModalOpen(!modalOpen);
@@ -33,8 +35,10 @@ const useCategoryModal = ({ categoryList }: Props) => {
     }
 
     useEffect(()=>{
-        setCategories(categoryList);
-    },[]);
+        if (categoryList && Array.isArray(categoryList)) {
+            setCategories(categoryList);
+        }
+    },[categoryList, setCategories]);
 
     const { register, handleSubmit, reset, clearErrors, formState: { errors } } = useForm({
         resolver: yupResolver(schema),
@@ -83,6 +87,9 @@ const useCategoryModal = ({ categoryList }: Props) => {
             if(result.value){
                 addCategory(result.value)
             }
+
+            // Refrescar datos del servidor
+            router.refresh();
 
             resetForm();
             setFloatMessageState(()=>({

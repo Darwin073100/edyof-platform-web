@@ -61,7 +61,4 @@ const exampleDTO: RegisterInitialProductDTO = {
 // Ejemplo de uso del mapper
 const httpDTO = ProductMapper.toHttpMany(exampleDTO);
 
-console.log("DTO HTTP para enviar al backend:");
-console.log(JSON.stringify(httpDTO, null, 2));
-
 export { exampleDTO, httpDTO };

@@ -1,6 +1,7 @@
-'use cient'
+'use client'
 import * as yup from 'yup';
 import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 import { FloatMessageType } from "@/shared/ui/types/FloatMessageType";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -25,6 +26,7 @@ const useBrandModal = ({ brandList }: Props) => {
     const { setBrands, addBrand, brand, setBrand, modalOpen, setModalOpen } = useBrandStore();
     const [floatMessageState, setFloatMessageState] = useState<FloatMessageType>({});
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
 
     const handleOpenModal = () => {
         setModalOpen(!modalOpen);
@@ -32,8 +34,10 @@ const useBrandModal = ({ brandList }: Props) => {
     }
 
     useEffect(()=>{
-        setBrands(brandList);
-    },[]);
+        if (brandList && Array.isArray(brandList)) {
+            setBrands(brandList);
+        }
+    },[brandList, setBrands]);
 
     const { register, handleSubmit, reset, clearErrors, formState: { errors } } = useForm({
         resolver: yupResolver(schema),
@@ -80,6 +84,9 @@ const useBrandModal = ({ brandList }: Props) => {
             if(result.value){
                 addBrand(result.value)
             }
+
+            // Refrescar datos del servidor
+            router.refresh();
 
             resetForm();
             setFloatMessageState(()=>({

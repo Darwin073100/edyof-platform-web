@@ -23,8 +23,6 @@ export class UserFetchRepositoryImpl implements UserRepository {
             const response = await result.json() as any;
             return Result.success(response);
         } catch (error:any) {
-            console.log(error);
-
             return Result.failure({
                 error: error?.message || error,
                 message: 'No se pudo conectar al servidor.',

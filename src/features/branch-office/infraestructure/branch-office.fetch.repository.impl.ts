@@ -27,7 +27,6 @@ export class BranchOfficeFetchRepositoryImpl implements BranchOfficeRepository{
     
 
         try {
-            console.log(JSON.stringify(dataBody))
             const response = await fetch(`${this.URL}`, {
                 method: 'POST',
                 headers: {
@@ -45,9 +44,6 @@ export class BranchOfficeFetchRepositoryImpl implements BranchOfficeRepository{
             return Result.success(branchOffice);
 
         } catch (error: any) {
-
-            console.log(error);
-            
             return Result.failure({
                 error: error?.message || error,
                 message: 'No se pudo conectar al servidor',

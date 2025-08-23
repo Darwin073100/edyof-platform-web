@@ -1,6 +1,7 @@
-'use cient'
+'use client'
 import * as yup from 'yup';
 import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 import { FloatMessageType } from "@/shared/ui/types/FloatMessageType";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -32,6 +33,7 @@ const useSeasonModal = ({ seasonList }: Props) => {
     const { setSeasons, addSeason, season, setSeason, modalOpen, setModalOpen } = useSeasonStore();
     const [floatMessageState, setFloatMessageState] = useState<FloatMessageType>({});
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
 
     const handleOpenModal = () => {
         setModalOpen(!modalOpen);
@@ -39,8 +41,10 @@ const useSeasonModal = ({ seasonList }: Props) => {
     }
 
     useEffect(()=>{
-        setSeasons(seasonList);
-    },[]);
+        if (seasonList && Array.isArray(seasonList)) {
+            setSeasons(seasonList);
+        }
+    },[seasonList, setSeasons]);
 
     const { register, handleSubmit, reset, clearErrors, formState: { errors } } = useForm({
         resolver: yupResolver(schema),
@@ -97,6 +101,9 @@ const useSeasonModal = ({ seasonList }: Props) => {
             if(result.value){
                 addSeason(result.value)
             }
+
+            // Refrescar datos del servidor
+            router.refresh();
 
             resetForm();
             setFloatMessageState(()=>({

@@ -64,7 +64,6 @@ export const CreateBranchForm = () => {
             state: data.state,
             reference: data.reference?.toString()
         };
-        console.log(branch);
 
         resp = await createNewBranchOfficeAction(branch);
 

@@ -17,7 +17,7 @@ interface Props {
 }
 
 export default async function ProductDetailsPage({ params }: Props) {
-    const { productId } = params;
+    const { productId } = await params;
     
     // Obtener los detalles del producto
     const productResult = await viewProductByIdAction(productId);
