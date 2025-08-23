@@ -5,91 +5,73 @@ import { ProductRepository } from "../../domain/repositories/product.repository"
 import { RegisterProductDTO } from "../../application/dtos/register-product.dto";
 import { RegisterInitialProductDTO } from "../../application/dtos/register-initial-product.dto";
 import { ProductMapper } from "../mappers/product.mapper";
+import { HttpClient } from "@/shared/infrastructure/http/http-client.interface";
+import { ApiConfig } from "@/shared/infrastructure/config/api-config";
 
-export class ProductFetchRepositoryImpl implements ProductRepository{
-    private readonly URL = `${process.env.URL_EDYOF_PLATFORM_API}${process.env.PREFIX_EDYOF_PLATFORM_API}/products`;
+export class ProductFetchRepositoryImpl implements ProductRepository {
+    constructor(
+        private readonly httpClient: HttpClient,
+        private readonly apiConfig: ApiConfig
+    ) {}
     
     async findAll(): Promise<Result<{products: ProductEntity[]}, ErrorEntity>> {
         try {
-            const response = await fetch(`${this.URL}`,{
-                method: 'GET'
-            });
+            const response = await this.httpClient.get<{products: ProductEntity[]}>(
+                this.apiConfig.getEndpointUrl('/products')
+            );
 
-            if (!response.ok) {
-                const error = await response.json() as ErrorEntity;
-                return Result.failure(error);
-            }
-
-            const inventory = await response.json() as { products: ProductEntity[] };
-            return Result.success(inventory);
+            return Result.success(response.data);
 
         } catch (error: any) {
-            return Result.failure({
-                error: error?.message || error,
-                message: 'No se pudo conectar al servidor: Product',
-                statusCode: 500,
-                path: `${process.env.PREFIX_EDYOF_PLATFORM_API}/products`,
-                timestamp: new Date().toDateString()
-            } satisfies ErrorEntity);
+            return this.handleError(error, 'findAll products');
         }
     }
 
     async save(dto: RegisterProductDTO): Promise<Result<ProductEntity, ErrorEntity>> {
         try {
-            const response = await fetch(`${this.URL}`,{
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(dto),
-            });
+            const response = await this.httpClient.post<ProductEntity>(
+                this.apiConfig.getEndpointUrl('/products'),
+                dto
+            );
 
-            if (!response.ok) {
-                const error = await response.json() as ErrorEntity;
-                return Result.failure(error);
-            }
-
-            const inventory = await response.json() as ProductEntity;
-            return Result.success(inventory);
+            return Result.success(response.data);
 
         } catch (error: any) {
-            return Result.failure({
-                error: error?.message || error,
-                message: 'No se pudo conectar al servidor: Product',
-                statusCode: 500,
-                path: `${process.env.PREFIX_EDYOF_PLATFORM_API}/products`,
-                timestamp: new Date().toDateString()
-            } satisfies ErrorEntity);
+            return this.handleError(error, 'save product');
         }
     }
     
     async saveProductWithLotAndInventory(dto: RegisterInitialProductDTO): Promise<Result<ProductEntity, ErrorEntity>> {
         try {
             const dtoHttp = ProductMapper.toHttpMany(dto);
-            const response = await fetch(`${this.URL}/with-lot-and-inventory-item`,{
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(dtoHttp),
-            });
-    
-            if (!response.ok) {
-                const error = await response.json() as ErrorEntity;
-                return Result.failure(error);
-            }
-    
-            const inventory = await response.json() as ProductEntity;
-            return Result.success(inventory);
-    
+            const response = await this.httpClient.post<ProductEntity>(
+                this.apiConfig.getEndpointUrl('/products/with-lot-and-inventory-item'),
+                dtoHttp
+            );
+
+            return Result.success(response.data);
+
         } catch (error: any) {
-            return Result.failure({
-                error: error?.message || error,
-                message: 'No se pudo conectar al servidor: Product',
-                statusCode: 500,
-                path: `${process.env.PREFIX_EDYOF_PLATFORM_API}/products/with-lot-and-inventory-item`,
-                timestamp: new Date().toDateString()
-            } satisfies ErrorEntity);
+            return this.handleError(error, 'save product with lot and inventory');
         }  
+    }
+
+    /**
+     * Manejo centralizado de errores
+     */
+    private handleError(error: any, operation: string): Result<any, ErrorEntity> {
+        // Si es un error HTTP (del servidor)
+        if (error.status && error.data) {
+            return Result.failure(error.data as ErrorEntity);
+        }
+
+        // Si es un error de red o conexión
+        return Result.failure({
+            error: error?.message || error,
+            message: `No se pudo conectar al servidor durante: ${operation}`,
+            statusCode: error?.status || 500,
+            path: operation,
+            timestamp: new Date().toDateString()
+        } satisfies ErrorEntity);
     }
 }
