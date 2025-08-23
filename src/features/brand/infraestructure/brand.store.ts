@@ -10,6 +10,8 @@ type State = {
     setModalOpen: (open: boolean) => void;
     setBrands: (brands: BrandEntity[]) => void;
     addBrand: (brand: BrandEntity) => void;
+    updateBrand: (brand: BrandEntity) => void;
+    removeBrand: (brandId: string) => void;
 }
 
 export const useBrandStore = create<State>()((set, get) => ({
@@ -21,5 +23,13 @@ export const useBrandStore = create<State>()((set, get) => ({
     setBrands: (brands) => set(() => ({ brands })),
     addBrand: (brand) => set((state) => ({
         brands: [...state.brands, brand]
+    })),
+    updateBrand: (updatedBrand) => set((state) => ({
+        brands: state.brands.map(brand => 
+            brand.brandId === updatedBrand.brandId ? updatedBrand : brand
+        )
+    })),
+    removeBrand: (brandId) => set((state) => ({
+        brands: state.brands.filter(brand => brand.brandId !== brandId)
     }))
 }));

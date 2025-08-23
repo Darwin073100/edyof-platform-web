@@ -2,10 +2,10 @@
 import { revalidatePath } from 'next/cache';
 import { RegisterBrandDTO } from "../application/dtos/register-brand.dto";
 import { RegisterBrandUseCase } from "../application/use-case/register-brand.use-case";
-import { BrandFetchRepositoryImpl } from "../infraestructure/brand-fetch-repository.impl";
+import { BrandRepositoryFactory } from '../infraestructure/factories/brand-repository.factory';
 
 export async function registerBrandAction(dto: RegisterBrandDTO){
-    const brandFetchRepositoryImpl = new BrandFetchRepositoryImpl();
+    const brandFetchRepositoryImpl = BrandRepositoryFactory.create();
     const registerBrandUseCase = new RegisterBrandUseCase(brandFetchRepositoryImpl);
 
     const result = await registerBrandUseCase.execute(dto);

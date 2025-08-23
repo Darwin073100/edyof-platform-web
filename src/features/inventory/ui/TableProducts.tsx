@@ -1,7 +1,6 @@
 'use client'
 import { RoundedButton } from "@/ui/components/buttons/RoundedButton";
-import { AiFillDelete } from "react-icons/ai";
-import { MdEditSquare } from "react-icons/md";
+import { CgDetailsMore } from "react-icons/cg";
 import { useMemo } from "react";
 import { ProductEntity } from "@/features/product/domain/entities/product.entity";
 import { useProductStore } from "@/features/product/infraestructure/stores/product.store";
@@ -80,7 +79,7 @@ export function TableProduct({ productList = [] }: TableProductProps) {
         return true;
     }) || [];
 
-    const head = ['Cod. Bar. Uni.', 'Nombre', 'Stock', 'Ubi.', 'P. Com.', 'P. Uni.', 'P. May.', 'Categ.', 'Acciones'];
+    const head = ['Cod. Bar. Uni.', 'Nombre', 'Stock', 'Ubi.', 'P. Com.', 'P. Uni.', 'P. May.', 'Categ.', 'Detalles'];
 
     return (
         <div>
@@ -107,10 +106,7 @@ export function TableProduct({ productList = [] }: TableProductProps) {
                                     onClick={() => handleViewProduct(item?.productId?.toString() || '')}
                                     title="Ver detalles del producto"
                                 >
-                                    <MdEditSquare />
-                                </RoundedButton>
-                                <RoundedButton color="red" title="Eliminar producto">
-                                    <AiFillDelete />
+                                    <CgDetailsMore />
                                 </RoundedButton>
                             </td>
                         </tr>

@@ -11,6 +11,8 @@ import { BrandEntity } from '../domain/entities/brand.entity';
 import { useBrandStore } from '../infraestructure/brand.store';
 import { RegisterBrandDTO } from '../application/dtos/register-brand.dto';
 import { registerBrandAction } from '../actions/register-brand.action';
+import { useUpdateBrand } from './useUpdateBrand';
+import { UpdateBrandDTO } from '../application/dtos/update-brand.dto';
 
 const schema = yup.object({
     name: yup.string().required('El campo es obligatorio').min(3, 'La marca debe tener al menos 3 caracteres.'),
@@ -23,10 +25,13 @@ interface Props{
 }
 
 const useBrandModal = ({ brandList }: Props) => {
-    const { setBrands, addBrand, brand, setBrand, modalOpen, setModalOpen } = useBrandStore();
+    const { setBrands, addBrand, updateBrand, brand, setBrand, modalOpen, setModalOpen } = useBrandStore();
+    const { updateBrand: updateBrandAction, isLoading: isUpdating } = useUpdateBrand();
     const [floatMessageState, setFloatMessageState] = useState<FloatMessageType>({});
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
+
+    const isEditMode = !!brand;
 
     const handleOpenModal = () => {
         setModalOpen(!modalOpen);
@@ -64,11 +69,37 @@ const useBrandModal = ({ brandList }: Props) => {
         setFloatMessageState(() => ({}));
         setIsLoading(true);
         let result:any;
+        
         if (!errors.name) {
-            const newCategory: RegisterBrandDTO = {
-                name: data.name
+            if (isEditMode && brand) {
+                // Update existing brand
+                const updateBrandDTO: UpdateBrandDTO = {
+                    brandId: brand.brandId,
+                    name: data.name
+                };
+                
+                const success = await updateBrandAction(updateBrandDTO);
+                
+                if (success) {
+                    // Update the brand in the store
+                    const updatedBrand: BrandEntity = {
+                        ...brand,
+                        name: data.name,
+                        updatedAt: new Date()
+                    };
+                    updateBrand(updatedBrand);
+                    
+                    result = { ok: true };
+                } else {
+                    result = { ok: false, error: { message: 'Error updating brand' } };
+                }
+            } else {
+                // Create new brand
+                const newBrand: RegisterBrandDTO = {
+                    name: data.name
+                }
+                result = await registerBrandAction(newBrand);
             }
-            result = await registerBrandAction(newCategory);
         } else {
             result = Result.failure({
                 error: 'Hay un error',
@@ -81,7 +112,7 @@ const useBrandModal = ({ brandList }: Props) => {
 
         if (result?.ok) {
             setIsLoading(false);
-            if(result.value){
+            if(result.value && !isEditMode){
                 addBrand(result.value)
             }
 
@@ -90,7 +121,7 @@ const useBrandModal = ({ brandList }: Props) => {
 
             resetForm();
             setFloatMessageState(()=>({
-                description: 'Marca creada correctamente',
+                description: isEditMode ? 'Marca actualizada correctamente' : 'Marca creada correctamente',
                 summary: '¡Correcto!',
                 isActive: true,
                 type: 'blue'
@@ -118,11 +149,12 @@ const useBrandModal = ({ brandList }: Props) => {
     return {
         setBrands,
         addBrand,
+        updateBrand,
         brand, 
         setBrand,
         floatMessageState,
         setFloatMessageState,
-        isLoading,
+        isLoading: isLoading || isUpdating,
         setIsLoading,
         modalOpen, 
         setModalOpen,
@@ -132,6 +164,7 @@ const useBrandModal = ({ brandList }: Props) => {
         handleSubmit,
         register,
         errors,
+        isEditMode,
     }
 }
 
