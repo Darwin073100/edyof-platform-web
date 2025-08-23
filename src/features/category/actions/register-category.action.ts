@@ -2,21 +2,26 @@
 import { revalidatePath } from 'next/cache';
 import { RegisterCategoryDTO } from "../application/dtos/register-category.dto";
 import { RegisterCategoryUseCase } from "../application/use-case/register-category.use-case";
-import { CategoryFetchRepositoryImpl } from "../infraestructure/category-fetch-repository.imp";
+import { CategoryRepositoryFactory } from '../infraestructure/factories/category-repository.factory';
 
 export async function registerCategoryAction(dto: RegisterCategoryDTO){
-    // Inyeccion de las dependencias
-    const categoryFetchRepositoryImpl = new CategoryFetchRepositoryImpl();
-    const registerCategoryUseCase = new RegisterCategoryUseCase(categoryFetchRepositoryImpl);
+    try {
+        // Inyeccion de las dependencias usando Factory
+        const categoryRepository = CategoryRepositoryFactory.create();
+        const registerCategoryUseCase = new RegisterCategoryUseCase(categoryRepository);
 
-    const result = await registerCategoryUseCase.execute(dto);
+        const result = await registerCategoryUseCase.execute(dto);
 
-    // Invalidar el caché de la página de productos para que se actualicen los datos
-    if (result?.ok) {
-        revalidatePath('/products');
-    }
+        // Invalidar el caché de la página de productos para que se actualicen los datos
+        if (result?.ok) {
+            revalidatePath('/dashboard');
+        }
 
-    return {
-        ...result
+        return {
+            ...result
+        }
+    } catch (error) {
+        console.error('Error in registerCategoryAction:', error);
+        throw error;
     }
 }

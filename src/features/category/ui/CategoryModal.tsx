@@ -11,6 +11,8 @@ import { Spinner } from '@/ui/components/loadings/Spinner';
 import { CategoryEntity } from '../domain/entities/category.entity';
 import { MdCleaningServices } from 'react-icons/md';
 import { useCategoryModal } from '../hooks/useCategoryModal';
+import { useDeleteCategory } from '../hooks/useDeleteCategory';
+import { useUpdateCategory } from '../hooks/useUpdateCategory';
 import { CategoryTable } from './CategoryTable';
 
 interface Props{
@@ -22,8 +24,11 @@ const CategoryModal = ({ categoryList }: Props) => {
         modalOpen, setModalOpen,
         floatMessageState, isLoading, 
         handleOpenModal, handleSubmit, register,
-        onSubmit, resetForm,errors,
+        onSubmit, resetForm,errors, isEditMode, category,
     } = useCategoryModal({categoryList});
+    
+    const { floatMessageState: deleteFloatMessage } = useDeleteCategory();
+    const { floatMessageState: updateFloatMessage } = useUpdateCategory();
     
     
 
@@ -32,7 +37,9 @@ const CategoryModal = ({ categoryList }: Props) => {
             <div className='w-[500px] text-gray-700 flex flex-col items-center gap-2 bg-white p-4 rounded-md'>
                 <form onSubmit={handleSubmit(onSubmit)} className="w-full text-gray-700 flex flex-col items-center gap-2 bg-white p-4">
                     <div className="w-full flex justify-between items-center gap-2">
-                        <h2 className="text-lg font-semibold">Categorías de productos</h2>
+                        <h2 className="text-lg font-semibold">
+                            {isEditMode ? `Editando: ${category?.name}` : 'Categorías de productos'}
+                        </h2>
                         <RoundedButton color="red" onClick={() => handleOpenModal()}><IoClose /></RoundedButton>
                     </div>
                     <div className="w-full flex flex-col gap-2">
@@ -49,7 +56,12 @@ const CategoryModal = ({ categoryList }: Props) => {
                     </div>
                     <div className="w-full flex justify-end gap-2">
                         <Button className='w-32 flex justify-center items-center'>
-                            {isLoading ? <Spinner /> : <>Guardar<HiSave /></>}
+                            {isLoading ? <Spinner /> : (
+                                <>
+                                    {isEditMode ? 'Actualizar' : 'Guardar'}
+                                    <HiSave />
+                                </>
+                            )}
                         </Button>
                         <Button color="yellow" onClick={() => resetForm()}><MdCleaningServices />Limpiar campos</Button>
                         <Button color="gray" onClick={() => handleOpenModal()}><IoClose />Cerrar</Button>
@@ -63,6 +75,22 @@ const CategoryModal = ({ categoryList }: Props) => {
                 summary={floatMessageState.summary}
                 type={floatMessageState.type}
                 isActive={floatMessageState.isActive} />
+            
+            {/* Mensaje de eliminación */}
+            <FloatMessage
+                key={deleteFloatMessage.summary}
+                description={deleteFloatMessage.description}
+                summary={deleteFloatMessage.summary}
+                type={deleteFloatMessage.type}
+                isActive={deleteFloatMessage.isActive} />
+
+            {/* Mensaje de actualización */}
+            <FloatMessage
+                key={updateFloatMessage.summary}
+                description={updateFloatMessage.description}
+                summary={updateFloatMessage.summary}
+                type={updateFloatMessage.type}
+                isActive={updateFloatMessage.isActive} />
         </Modal >
     )
 }

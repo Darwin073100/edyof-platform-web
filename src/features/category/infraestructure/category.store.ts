@@ -10,6 +10,8 @@ type State = {
     setModalOpen: (open: boolean) => void;
     setCategories: (categories: CategoryEntity[]) => void;
     addCategory: (category: CategoryEntity) => void;
+    updateCategory: (updatedCategory: CategoryEntity) => void;
+    removeCategory: (categoryId: string) => void;
 }
 
 export const useCategoryStore = create<State>()((set, get) => ({
@@ -20,6 +22,14 @@ export const useCategoryStore = create<State>()((set, get) => ({
     setCategories: (categories) => set(() => ({ categories })),
     addCategory: (category) => set((state) => ({
         categories: [...state.categories, category]
+    })),
+    updateCategory: (updatedCategory) => set((state) => ({
+        categories: state.categories.map(category => 
+            category.categoryId === updatedCategory.categoryId ? updatedCategory : category
+        )
+    })),
+    removeCategory: (categoryId) => set((state) => ({
+        categories: state.categories.filter(category => category.categoryId !== categoryId)
     })),
     setCategory: (category) => set(()=> ({
         category

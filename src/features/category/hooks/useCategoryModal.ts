@@ -6,9 +6,11 @@ import { useCategoryStore } from "../infraestructure/category.store";
 import { FloatMessageType } from "@/shared/ui/types/FloatMessageType";
 import { CategoryEntity } from "../domain/entities/category.entity";
 import { RegisterCategoryDTO } from "../application/dtos/register-category.dto";
+import { UpdateCategoryDTO } from "../application/dtos/update-category.dto";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { registerCategoryAction } from '../actions/register-category.action';
+import { useUpdateCategory } from './useUpdateCategory';
 import { Result } from '@/shared/features/result';
 import { ErrorEntity } from '@/shared/features/error.entity';
 
@@ -27,7 +29,10 @@ const useCategoryModal = ({ categoryList }: Props) => {
     const { setCategories, addCategory, category, setCategory, modalOpen, setModalOpen } = useCategoryStore();
     const [floatMessageState, setFloatMessageState] = useState<FloatMessageType>({});
     const [isLoading, setIsLoading] = useState(false);
+    const { handleUpdate, isUpdating } = useUpdateCategory();
     const router = useRouter();
+
+    const isEditMode = !!category;
 
     const handleOpenModal = () => {
         setModalOpen(!modalOpen);
@@ -47,7 +52,10 @@ const useCategoryModal = ({ categoryList }: Props) => {
 
     const resetForm = ()=>{
         setCategory(null)
-        reset({});
+        reset({
+            name: '',
+            description: ''
+        });
         clearErrors(['description', 'name'])
     }
 
@@ -55,7 +63,7 @@ const useCategoryModal = ({ categoryList }: Props) => {
         if(!!category){
             reset({
                 name: category.name,
-                description: category.description
+                description: category.description || ''
             })
         } else {
             resetForm()
@@ -66,12 +74,52 @@ const useCategoryModal = ({ categoryList }: Props) => {
         setFloatMessageState(() => ({}));
         setIsLoading(true);
         let result;
+        
         if (!errors.name) {
-            const newCategory: RegisterCategoryDTO = {
-                name: data.name,
-                description: data.description,
+            if (isEditMode && category) {
+                // Modo actualización
+                const updateData: UpdateCategoryDTO = {
+                    categoryId: category.categoryId,
+                    name: data.name,
+                    description: data.description,
+                };
+                
+                const updateResult = await handleUpdate(updateData);
+                if (updateResult.success) {
+                    setIsLoading(false);
+                    resetForm();
+                    setFloatMessageState(()=>({
+                        description: 'Categoría actualizada correctamente',
+                        summary: '¡Correcto!',
+                        isActive: true,
+                        type: 'blue'
+                    }));
+
+                    setTimeout(()=>{
+                        setFloatMessageState(() => ({}));
+                    }, 4000);
+                    return;
+                } else {
+                    const errorMessage = Array.isArray(updateResult.error) 
+                        ? updateResult.error.join(', ') 
+                        : updateResult.error || 'Error al actualizar';
+                    
+                    result = Result.failure({
+                        error: errorMessage,
+                        message: errorMessage,
+                        statusCode: 500,
+                        path: '',
+                        timestamp: new Date().toDateString()
+                    } satisfies ErrorEntity);
+                }
+            } else {
+                // Modo creación
+                const newCategory: RegisterCategoryDTO = {
+                    name: data.name,
+                    description: data.description,
+                }
+                result = await registerCategoryAction(newCategory);
             }
-            result = await registerCategoryAction(newCategory);
         } else {
             result = Result.failure({
                 error: 'Hay un error',
@@ -115,7 +163,6 @@ const useCategoryModal = ({ categoryList }: Props) => {
                 setFloatMessageState(() => ({}));
             }, 4000);          
         }
-
     }
     
     return {
@@ -125,7 +172,7 @@ const useCategoryModal = ({ categoryList }: Props) => {
         setCategory,
         floatMessageState,
         setFloatMessageState,
-        isLoading,
+        isLoading: isLoading || isUpdating,
         setIsLoading,
         modalOpen, 
         setModalOpen,
@@ -135,6 +182,7 @@ const useCategoryModal = ({ categoryList }: Props) => {
         handleSubmit,
         register,
         errors,
+        isEditMode,
     }
 }
 
