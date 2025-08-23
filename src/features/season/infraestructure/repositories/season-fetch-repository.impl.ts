@@ -5,34 +5,35 @@ import { ErrorEntity } from "@/shared/features/error.entity";
 import { RegisterSeasonDTO } from "../../application/dtos/register-season.dto";
 import { SeasonMapper } from "../mappers/season.mapper";
 import { UpdateSeasonDTO } from "../../application/dtos/update-season.dto";
+import { HttpClient } from "@/shared/infrastructure/http/http-client.interface";
+import { ApiConfig } from "@/shared/infrastructure/config/api-config";
 
 export class SeasonFetchRepositoryImpl implements SeasonRepository{
     
-    private readonly URL = `${process.env.URL_EDYOF_PLATFORM_API}${process.env.PREFIX_EDYOF_PLATFORM_API}/seasons`;
+    constructor(
+        private readonly httpClient: HttpClient,
+        private readonly apiConfig: ApiConfig
+    ) {}
 
     async save(dto: RegisterSeasonDTO): Promise<Result<SeasonEntity, ErrorEntity>> {
         try {
             const dtoHttp = SeasonMapper.toHttpDto(dto);
-            const result = await fetch(`${this.URL}`,{
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(dtoHttp),
-            });
-            if(!result.ok){
-                const error = await result.json() as ErrorEntity;
-                return Result.failure(error);
-            }
-
-            const season = await result.json() as SeasonEntity;
-            return Result.success(season)
+            const url = this.apiConfig.getEndpointUrl('/seasons');
+            
+            const response = await this.httpClient.post<SeasonEntity>(url, dtoHttp);
+            
+            return Result.success(response.data);
         } catch (error: any) {
+            // Si es un HttpError, extraer información del servidor
+            if (error.status && error.data) {
+                return Result.failure(error.data);
+            }
+            
             return Result.failure({
                 error: error?.message || error,
                 message: 'No se pudo conectar al backend',
                 statusCode: 500,
-                path: `${process.env.PREFIX_EDYOF_PLATFORM_API}/seasons`,
+                path: '/seasons',
                 timestamp: new Date().toDateString(),
             } satisfies ErrorEntity);
         }
@@ -40,26 +41,22 @@ export class SeasonFetchRepositoryImpl implements SeasonRepository{
     async update(dto: UpdateSeasonDTO): Promise<Result<SeasonEntity, ErrorEntity>> {
         try {
             const dtoHttp = SeasonMapper.toHttpUpdateDto(dto);
-            const result = await fetch(`${this.URL}`,{
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(dtoHttp),
-            });
-            if(!result.ok){
-                const error = await result.json() as ErrorEntity;
-                return Result.failure(error);
-            }
-
-            const season = await result.json() as SeasonEntity;
-            return Result.success(season)
+            const url = this.apiConfig.getEndpointUrl('/seasons');
+            
+            const response = await this.httpClient.patch<SeasonEntity>(url, dtoHttp);
+            
+            return Result.success(response.data);
         } catch (error: any) {
+            // Si es un HttpError, extraer información del servidor
+            if (error.status && error.data) {
+                return Result.failure(error.data);
+            }
+            
             return Result.failure({
                 error: error?.message || error,
                 message: 'No se pudo conectar al servidor.',
                 statusCode: 500,
-                path: `${process.env.PREFIX_EDYOF_PLATFORM_API}/seasons`,
+                path: '/seasons',
                 timestamp: new Date().toDateString(),
             } satisfies ErrorEntity);
         }
@@ -67,20 +64,22 @@ export class SeasonFetchRepositoryImpl implements SeasonRepository{
 
     async delete(seasonId: bigint): Promise<Result<boolean, ErrorEntity>> {
         try {
-            const result = await fetch(`${this.URL}/${seasonId}`, {
-                method: 'DELETE',
-            });
-            if (!result.ok) {
-                const error = await result.json() as ErrorEntity;
-                return Result.failure(error);
-            }
+            const url = this.apiConfig.getEndpointUrl(`/seasons/${seasonId}`);
+            
+            const response = await this.httpClient.delete<boolean>(url);
+            
             return Result.success(true);
         } catch (error: any) {
+            // Si es un HttpError, extraer información del servidor
+            if (error.status && error.data) {
+                return Result.failure(error.data);
+            }
+            
             return Result.failure({
                 error: error?.message || error,
                 message: 'No se pudo conectar al servidor.',
                 statusCode: 500,
-                path: `${process.env.PREFIX_EDYOF_PLATFORM_API}/seasons`,
+                path: '/seasons',
                 timestamp: new Date().toDateString(),
             } satisfies ErrorEntity);
         }
@@ -88,23 +87,22 @@ export class SeasonFetchRepositoryImpl implements SeasonRepository{
 
     async findAll(): Promise<Result<{ seasons: SeasonEntity[]; }, ErrorEntity>> {
         try {
-            const result = await fetch(`${this.URL}`,{
-                method: 'GET'
-            });
-
-            if(!result.ok){
-                const errorResponse = await result.json() as ErrorEntity;
-                return Result.failure(errorResponse);
-            }
-
-            const seasonsResponse = await result.json() as { seasons: SeasonEntity[]}
-            return Result.success(seasonsResponse);
+            const url = this.apiConfig.getEndpointUrl('/seasons');
+            
+            const response = await this.httpClient.get<{ seasons: SeasonEntity[] }>(url);
+            
+            return Result.success(response.data);
         } catch (error: any) {
+            // Si es un HttpError, extraer información del servidor
+            if (error.status && error.data) {
+                return Result.failure(error.data);
+            }
+            
             return Result.failure({
                 error: error?.message || error,
                 message: 'No se pudo conectar al backend',
                 statusCode: 500,
-                path: `${process.env.PREFIX_EDYOF_PLATFORM_API}/seasons`,
+                path: '/seasons',
                 timestamp: new Date().toDateString(),
             } satisfies ErrorEntity);
         }

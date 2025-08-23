@@ -13,6 +13,7 @@ import { SeasonEntity } from '../domain/entities/season.entity';
 import { useSeasonModal } from '../hooks/useSeasonModal';
 import { SeasonTable } from './SeasonTable';
 import { useDeleteSeason } from '../hooks/useDeleteSeason';
+import { useUpdateSeason } from '../hooks/useUpdateSeason';
 
 interface Props{
     seasonList: SeasonEntity[]
@@ -23,17 +24,20 @@ const SeasonModal = ({ seasonList }: Props) => {
         modalOpen, setModalOpen,
         floatMessageState, isLoading, 
         handleOpenModal, handleSubmit, register,
-        onSubmit, resetForm,errors,
+        onSubmit, resetForm,errors, isEditMode, season,
     } = useSeasonModal({seasonList});
     
     const { floatMessageState: deleteFloatMessage } = useDeleteSeason();
+    const { floatMessageState: updateFloatMessage } = useUpdateSeason();
 
     return (
         <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
             <div className='w-[650px] text-gray-700 flex flex-col items-center gap-2 bg-white p-4 rounded-md'>
                 <form onSubmit={handleSubmit(onSubmit)} className="w-full text-gray-700 flex flex-col items-center gap-2 bg-white p-4">
                     <div className="w-full flex justify-between items-center gap-2">
-                        <h2 className="text-lg font-semibold">Temporadas de productos</h2>
+                        <h2 className="text-lg font-semibold">
+                            {isEditMode ? `Editando: ${season?.name}` : 'Temporadas de productos'}
+                        </h2>
                         <RoundedButton color="red" onClick={() => handleOpenModal()}><IoClose /></RoundedButton>
                     </div>
                     <div className="w-full flex flex-col gap-2">
@@ -62,7 +66,12 @@ const SeasonModal = ({ seasonList }: Props) => {
                     </div>
                     <div className="w-full flex justify-end gap-2">
                         <Button className='w-32 flex justify-center items-center'>
-                            {isLoading ? <Spinner /> : <>Guardar<HiSave /></>}
+                            {isLoading ? <Spinner /> : (
+                                <>
+                                    {isEditMode ? 'Actualizar' : 'Guardar'}
+                                    <HiSave />
+                                </>
+                            )}
                         </Button>
                         <Button color="yellow" onClick={() => resetForm()}><MdCleaningServices />Limpiar campos</Button>
                         <Button color="gray" onClick={() => handleOpenModal()}><IoClose />Cerrar</Button>
@@ -84,6 +93,14 @@ const SeasonModal = ({ seasonList }: Props) => {
                 summary={deleteFloatMessage.summary}
                 type={deleteFloatMessage.type}
                 isActive={deleteFloatMessage.isActive} />
+
+            {/* Mensaje de actualización */}
+            <FloatMessage
+                key={updateFloatMessage.summary}
+                description={updateFloatMessage.description}
+                summary={updateFloatMessage.summary}
+                type={updateFloatMessage.type}
+                isActive={updateFloatMessage.isActive} />
         </Modal >
     )
 }

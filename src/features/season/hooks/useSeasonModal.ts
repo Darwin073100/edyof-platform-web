@@ -10,15 +10,17 @@ import { ErrorEntity } from '@/shared/features/error.entity';
 import { SeasonEntity } from '../domain/entities/season.entity';
 import { useSeasonStore } from '../infraestructure/season.store';
 import { RegisterSeasonDTO } from '../application/dtos/register-season.dto';
+import { UpdateSeasonDTO } from '../application/dtos/update-season.dto';
 import { registerSeasonAction } from '../actions/register-season.action';
+import { useUpdateSeason } from './useUpdateSeason';
 
 const schema = yup.object({
     name: yup.string().required('El campo es obligatorio').min(3, 'La categoría debe tener al menos 3 caracteres.'),
     description: yup.string().optional().notRequired().default(''),
-    dateInit: yup.date()
+    dateInit: yup.string()
         .transform((value, originalValue) => originalValue === '' ? null : value)
         .optional().notRequired().nullable(),
-    dateFinish: yup.date()
+    dateFinish: yup.string()
         .transform((value, originalValue) => originalValue === '' ? null : value)
         .optional().notRequired().nullable()
 }).required();
@@ -33,7 +35,10 @@ const useSeasonModal = ({ seasonList }: Props) => {
     const { setSeasons, addSeason, season, setSeason, modalOpen, setModalOpen } = useSeasonStore();
     const [floatMessageState, setFloatMessageState] = useState<FloatMessageType>({});
     const [isLoading, setIsLoading] = useState(false);
+    const { handleUpdate, isUpdating } = useUpdateSeason();
     const router = useRouter();
+
+    const isEditMode = !!season;
 
     const handleOpenModal = () => {
         setModalOpen(!modalOpen);
@@ -50,25 +55,89 @@ const useSeasonModal = ({ seasonList }: Props) => {
         resolver: yupResolver(schema),
         mode: 'onChange',
         defaultValues:{
-            dateFinish: new Date(),
-            dateInit: new Date(),
+            dateFinish: '',
+            dateInit: '',
         }
     });
 
     const resetForm = ()=>{
         setSeason(null)
-        reset({});
+        reset({
+            name: '',
+            description: '',
+            dateInit: '',
+            dateFinish: ''
+        });
         clearErrors(['description', 'name', 'dateInit', 'dateFinish'])
+    }
+
+    // Helper para formatear fecha al formato YYYY-MM-DD que esperan los inputs de tipo date
+    const formatDateForInput = (date: Date | string | null | undefined): string => {
+        if (!date) return '';
+        
+        try {
+            let dateObj: Date;
+            
+            if (typeof date === 'string') {
+                // Si es string, crear la fecha manualmente para evitar problemas de timezone
+                const isoMatch = date.match(/^(\d{4})-(\d{2})-(\d{2})/);
+                if (isoMatch) {
+                    const [, year, month, day] = isoMatch;
+                    dateObj = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                } else {
+                    dateObj = new Date(date);
+                }
+            } else {
+                dateObj = date;
+            }
+            
+            if (isNaN(dateObj.getTime())) {
+                console.warn('Invalid date received:', date);
+                return '';
+            }
+            
+            // Usar métodos locales para evitar problemas de timezone
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            
+            return `${year}-${month}-${day}`;
+        } catch (error) {
+            console.error('Error formatting date:', error, 'Input:', date);
+            return '';
+        }
+    }
+
+    // Helper para convertir string de fecha (YYYY-MM-DD) a Date object
+    const parseInputDate = (dateString: string | null | undefined): Date | null => {
+        if (!dateString || dateString === '') return null;
+        
+        try {
+            // Crear la fecha correctamente para evitar problemas de timezone
+            // Parseamos manualmente para asegurar que se interprete en zona horaria local
+            const [year, month, day] = dateString.split('-').map(Number);
+            const date = new Date(year, month - 1, day); // month - 1 porque los meses en JS son 0-indexados
+            
+            console.log(`parseInputDate: "${dateString}" -> ${date.toISOString()} (local: ${date.toLocaleDateString()})`);
+            
+            return isNaN(date.getTime()) ? null : date;
+        } catch (error) {
+            console.error('Error parsing date:', error);
+            return null;
+        }
     }
 
     useEffect(()=>{
         if(!!season){
-            reset({
+            console.log('Setting season data:', season);
+            const formData = {
                 name: season.name,
                 description: season.description,
-                dateInit: season.dateInit ? new Date(season.dateInit) : undefined,
-                dateFinish: season.dateFinish ? new Date(season.dateFinish) : undefined
-            })
+                dateInit: formatDateForInput(season.dateInit),
+                dateFinish: formatDateForInput(season.dateFinish)
+            };
+            console.log('Form data being set:', formData);
+            reset(formData);
         } else {
             resetForm()
         }
@@ -78,14 +147,56 @@ const useSeasonModal = ({ seasonList }: Props) => {
         setFloatMessageState(() => ({}));
         setIsLoading(true);
         let result;
+        
         if (!errors.name) {
-            const newSeason: RegisterSeasonDTO = {
-                name: data.name,
-                description: data.description,
-                dateInit: data.dateInit ?? null,
-                dateFinish: data.dateFinish ?? null
+            if (isEditMode && season) {
+                // Modo actualización
+                const updateData: UpdateSeasonDTO = {
+                    seasonId: season.seasonId,
+                    name: data.name,
+                    description: data.description,
+                    dateInit: parseInputDate(data.dateInit),
+                    dateFinish: parseInputDate(data.dateFinish)
+                };
+                
+                const updateResult = await handleUpdate(updateData);
+                if (updateResult.success) {
+                    setIsLoading(false);
+                    resetForm();
+                    setFloatMessageState(()=>({
+                        description: 'Temporada actualizada correctamente',
+                        summary: '¡Correcto!',
+                        isActive: true,
+                        type: 'blue'
+                    }));
+
+                    setTimeout(()=>{
+                        setFloatMessageState(() => ({}));
+                    }, 4000);
+                    return;
+                } else {
+                    const errorMessage = Array.isArray(updateResult.error) 
+                        ? updateResult.error.join(', ') 
+                        : updateResult.error || 'Error al actualizar';
+                    
+                    result = Result.failure({
+                        error: errorMessage,
+                        message: errorMessage,
+                        statusCode: 500,
+                        path: '',
+                        timestamp: new Date().toDateString()
+                    } satisfies ErrorEntity);
+                }
+            } else {
+                // Modo creación
+                const newSeason: RegisterSeasonDTO = {
+                    name: data.name,
+                    description: data.description,
+                    dateInit: parseInputDate(data.dateInit),
+                    dateFinish: parseInputDate(data.dateFinish)
+                }
+                result = await registerSeasonAction(newSeason);
             }
-            result = await registerSeasonAction(newSeason);
         } else {
             result = Result.failure({
                 error: 'Hay un error',
@@ -139,7 +250,7 @@ const useSeasonModal = ({ seasonList }: Props) => {
         setSeason,
         floatMessageState,
         setFloatMessageState,
-        isLoading,
+        isLoading: isLoading || isUpdating,
         setIsLoading,
         modalOpen, 
         setModalOpen,
@@ -149,6 +260,7 @@ const useSeasonModal = ({ seasonList }: Props) => {
         handleSubmit,
         register,
         errors,
+        isEditMode,
     }
 }
 

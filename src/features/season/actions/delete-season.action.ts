@@ -1,10 +1,10 @@
 'use server'
 import { revalidatePath } from 'next/cache';
 import { DeleteSeasonUseCase } from "../application/use-case/delete-season.use-case";
-import { SeasonFetchRepositoryImpl } from "../infraestructure/repositories/season-fetch-repository.impl";
+import { SeasonRepositoryFactory } from '../infraestructure/factories/season-repository.factory';
 
 export async function deleteSeasonAction(seasonId: bigint){
-    const seasonFetchRepositoryImpl = new SeasonFetchRepositoryImpl();
+    const seasonFetchRepositoryImpl = SeasonRepositoryFactory.create();
     const deleteSeasonUseCase = new DeleteSeasonUseCase(seasonFetchRepositoryImpl);
 
     const result = await deleteSeasonUseCase.execute(seasonId);

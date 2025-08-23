@@ -10,6 +10,7 @@ type State = {
     setModalOpen: (open: boolean) => void;
     setSeasons: (seasons: SeasonEntity[]) => void;
     addSeason: (season: SeasonEntity) => void;
+    updateSeason: (updatedSeason: SeasonEntity) => void;
     removeSeason: (seasonId: bigint) => void;
 }
 
@@ -22,6 +23,11 @@ export const useSeasonStore = create<State>()((set, get) => ({
     setSeasons: (seasons) => set(() => ({ seasons: seasons })),
     addSeason: (season) => set((state) => ({
         seasons: [...state.seasons, season]
+    })),
+    updateSeason: (updatedSeason) => set((state) => ({
+        seasons: state.seasons.map(season => 
+            season.seasonId === updatedSeason.seasonId ? updatedSeason : season
+        )
     })),
     removeSeason: (seasonId) => set((state) => ({
         seasons: state.seasons.filter(season => season.seasonId !== seasonId)
