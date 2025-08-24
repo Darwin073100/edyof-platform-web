@@ -12,10 +12,13 @@ export const Modal = (props: Props) => {
   return (
     <div
       id={new Date().getSeconds().toString()}
-      className="bg-[rgba(0,0,0,0.3)] overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0 h-screen max-h-full"
+      className="bg-[rgba(0,0,0,0.3)] fixed inset-0 z-50 flex items-start justify-center overflow-y-auto overflow-x-hidden p-4"
       onClick={props.onClose}
     >
-      <div onClick={e => e.stopPropagation()}>
+      <div 
+        onClick={e => e.stopPropagation()}
+        className="w-full flex justify-center items-start min-h-full py-4"
+      >
         {props.children}
       </div>
     </div>

@@ -68,6 +68,9 @@ importers:
       yup:
         specifier: ^1.6.1
         version: 1.6.1
+      zod:
+        specifier: ^4.1.1
+        version: 4.1.1
       zustand:
         specifier: ^5.0.3
         version: 5.0.3(@types/react@19.1.2)(react@19.1.0)
@@ -3289,6 +3292,9 @@ packages:
 
   yup@1.6.1:
     resolution: {integrity: sha512-JED8pB50qbA4FOkDol0bYF/p60qSEDQqBD0/qeIrUCG1KbPBIQ776fCUNb9ldbPcSTxA69g/47XTo4TqWiuXOA==}
+
+  zod@4.1.1:
+    resolution: {integrity: sha512-SgMZK/h8Tigt9nnKkfJMvB/mKjiJXaX26xegP4sa+0wHIFVFWVlsQGdhklDmuargBD3Hsi3rsQRIzwJIhTPJHA==}
 
   zustand@5.0.3:
     resolution: {integrity: sha512-14fwWQtU3pH4dE0dOpdMiWjddcH+QzKIgk1cl8epwSE7yag43k/AD/m4L6+K7DytAOr9gGBe3/EXj9g7cdostg==}
@@ -7002,6 +7008,8 @@ snapshots:
       tiny-case: 1.0.3
       toposort: 2.0.2
       type-fest: 2.19.0
+
+  zod@4.1.1: {}
 
   zustand@5.0.3(@types/react@19.1.2)(react@19.1.0):
     optionalDependencies:

@@ -20,6 +20,7 @@ import {
     TbBuildingWarehouse, 
     TbCurrencyDollar 
 } from 'react-icons/tb';
+import { UpdateProductModal } from './UpdateProductModal';
 
 interface Props {
     product: ProductEntity;
@@ -69,7 +70,7 @@ export function ProductDetailsView({ product }: Props) {
                     </ActionButton>
                 </div>
             </div>
-
+            <UpdateProductModal/>
             {/* Información del producto */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200">
                 <div className="border-b border-gray-200 px-6 py-4">
