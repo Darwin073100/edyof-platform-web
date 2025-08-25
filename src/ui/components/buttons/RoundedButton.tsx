@@ -13,7 +13,7 @@ export const RoundedButton = ({ children, color = 'blue' , ...props }: Props) =>
             className={
                 clsx(`transition-all duration-300 cursor-pointer bg-${color}-500 text-white p-2 rounded-full flex items-center justify-center w-8 h-8`,
                     props.className,
-                    color && `hover:bg-${color}-400`,
+                    color && `hover:bg-${color}-600`,
                 )}
             {...props}   >
             { children }

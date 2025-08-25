@@ -48,7 +48,7 @@ export function ActionButton({
                 ${getSizeClasses()}
                 rounded-lg transition-all duration-200 
                 disabled:opacity-50 disabled:cursor-not-allowed
-                flex items-center gap-2 font-medium
+                flex items-center gap-2 font-medium cursor-pointer
             `}
         >
             {children}

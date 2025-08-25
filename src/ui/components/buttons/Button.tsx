@@ -39,7 +39,7 @@ export function Button({
           fullWidth && 'w-full',
           txt,
           `gap-${space} px-${space} py-${space}`,
-          `bg-${color}-400 hover:bg-${color}-300`,
+          `bg-${color}-500 hover:bg-${color}-600`,
           className // lo último para que pueda sobrescribir
         )
       )}

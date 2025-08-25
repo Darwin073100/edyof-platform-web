@@ -3,7 +3,7 @@ import { viewAllBrandsAction } from "@/features/brand/actions/view-all-brands.ac
 import { ViewAllCategoriesAction } from "@/features/category/actions/view-all-categories.action";
 import { FormNewProduct } from "@/features/product/ui/FormNewProduct";
 import { viewAllSeasonsAction } from "@/features/season/actions/view-all-seasons.action";
-import { TemplateArea } from "@/ui/components/templates/TemplateArea";
+import { BreadcrumbItem, TemplateHeader } from "@/ui/components/templates/TemplateHeader";
 
 export default async function () {
     const viewAllCategories = await ViewAllCategoriesAction();
@@ -13,15 +13,18 @@ export default async function () {
     const viewAllSeasons = await viewAllSeasonsAction();
     const seasonItems = viewAllSeasons.ok ? viewAllSeasons.value?.seasons ?? [] : [];
 
+    const breadcrumbItems: BreadcrumbItem[] = [
+        {label: 'Productos', href: '/products'},
+        {label: 'Producto e inventario'}
+    ]
     return (
         <ProtectedRoute>
-            <TemplateArea className="w-full">
-                <h1 className="text-2xl text-gray-700 font-semibold mb-4">Alta de productos</h1>
+            <TemplateHeader title="Alta de productos e inventario" detail="Da de alta un producto con lote inicial e inventario." breadcrumbItems={breadcrumbItems}>
                 <FormNewProduct
                     brandList={brandItems}
                     seasonList={seasonItems}
                     categoryList={categoryItems} />
-            </TemplateArea>
+            </TemplateHeader>
         </ProtectedRoute>
     );
 }
