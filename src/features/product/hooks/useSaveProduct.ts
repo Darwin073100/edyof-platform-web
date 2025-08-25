@@ -4,11 +4,9 @@ import { useProductStore } from '../infraestructure/stores/product.store';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
 import { FloatMessageType } from '@/shared/ui/types/FloatMessageType';
-import { v4 as uuidv4 } from 'uuid';
 import { useForm } from 'react-hook-form';
 import { registerInitialProductAction } from '../actions/register-initial-product.action';
 import { RegisterInitialProductDTO } from '../application/dtos/register-initial-product.dto';
-import { LocationEnum } from '@/features/inventory/domain/enums/location.enum';
 import { useWorkspace } from '@/shared/hooks/useAuth';
 import { ForSaleEnum } from '../domain/enums/for-sale.enum';
 

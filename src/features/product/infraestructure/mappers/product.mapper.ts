@@ -1,5 +1,7 @@
 import { RegisterInitialProductDTO } from "../../application/dtos/register-initial-product.dto";
+import { UpdateProductDTO } from "../../application/dtos/update-product.dto";
 import { RegisterInitialProductHttpDTO } from "../dtos/register-initial-product-http.dto";
+import { UpdateProductHttpDTO } from "../dtos/update-product-http.dto";
 
 export class ProductMapper{
     /**
@@ -55,5 +57,22 @@ export class ProductMapper{
             })) || null
         };
         return result;
+    }
+
+    static toUpdateProductHttpDTO(dto: UpdateProductDTO){
+        const httpDTO: UpdateProductHttpDTO = {
+            productId: dto.productId.toString(),
+            categoryId: dto.categoryId.toString(),
+            seasonId: dto.seasonId?.toString(),
+            brandId: dto.brandId?.toString(),
+            name: dto.name,
+            universalBarCode: dto.universalBarCode,
+            unitOfMeasure: dto.unitOfMeasure,
+            sku: dto.sku,
+            minStockGlobal: dto.minStockGlobal,
+            description: dto.description
+        } 
+
+        return httpDTO;
     }
 }

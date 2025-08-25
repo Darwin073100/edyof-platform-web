@@ -12,8 +12,8 @@ type State = {
     setProductsFiltered: (value: ProductWithLotInventoryItemDTO[])=> void,
     product: ProductEntity|null,
     setProduct: (product: ProductEntity|null)=> void,
-    openModal: boolean,
-    setOpenModal: (value:boolean)=> void
+    isOpenProductModal: boolean,
+    setOpenProductModal: (value:boolean)=> void
 };
 
 export const useProductStore = create<State>()((set, get)=>({
@@ -31,8 +31,8 @@ export const useProductStore = create<State>()((set, get)=>({
         set(()=> ({productsFiltered: validProductsFiltered}))
     },
     setProduct: (product)=> set(()=> ({product})),
-    openModal: false,
-    setOpenModal(value) {
-        set(()=> ({openModal: value}))
+    isOpenProductModal: false,
+    setOpenProductModal(value) {
+        set(()=> ({isOpenProductModal: value}))
     },
 }));

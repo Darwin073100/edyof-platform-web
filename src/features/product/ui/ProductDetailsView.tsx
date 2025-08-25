@@ -21,12 +21,14 @@ import {
     TbCurrencyDollar 
 } from 'react-icons/tb';
 import { UpdateProductModal } from './UpdateProductModal';
+import { useUpdateProductModal } from '../hooks';
 
 interface Props {
     product: ProductEntity;
 }
 
 export function ProductDetailsView({ product }: Props) {
+    const { handleOpenUpdateProductModal } = useUpdateProductModal();
     const handleAddLot = () => {
         // Agregar nuevo lote
     };
@@ -60,7 +62,7 @@ export function ProductDetailsView({ product }: Props) {
                     <p className="text-gray-600 mt-1">Detalle del producto</p>
                 </div>
                 <div className="flex gap-2">
-                    <ActionButton variant="edit" size="md">
+                    <ActionButton variant="edit" size="md" onClick={()=> handleOpenUpdateProductModal(product)}>
                         <HiPencil className="w-4 h-4" />
                         Editar
                     </ActionButton>

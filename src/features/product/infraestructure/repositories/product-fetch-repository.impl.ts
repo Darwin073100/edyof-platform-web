@@ -7,6 +7,7 @@ import { RegisterInitialProductDTO } from "../../application/dtos/register-initi
 import { ProductMapper } from "../mappers/product.mapper";
 import { HttpClient } from "@/shared/infrastructure/http/http-client.interface";
 import { ApiConfig } from "@/shared/infrastructure/config/api-config";
+import { UpdateProductDTO } from "../../application/dtos/update-product.dto";
 
 export class ProductFetchRepositoryImpl implements ProductRepository {
     constructor(
@@ -38,6 +39,20 @@ export class ProductFetchRepositoryImpl implements ProductRepository {
 
         } catch (error: any) {
             return this.handleError(error, 'save product');
+        }
+    }
+
+    async update(dto: UpdateProductDTO): Promise<Result<ProductEntity, ErrorEntity>> {
+        try {
+            const httpDto = ProductMapper.toUpdateProductHttpDTO(dto);
+            const response = await this.httpClient.patch<ProductEntity>(
+                this.apiConfig.getEndpointUrl('/products'),
+                httpDto,
+            );
+            return Result.success(response.data);
+
+        } catch (error: any) {
+            return this.handleError(error, 'update product');
         }
     }
     
