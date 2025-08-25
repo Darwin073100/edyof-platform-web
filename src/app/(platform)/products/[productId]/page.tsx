@@ -47,9 +47,7 @@ export default async function ProductDetailsPage({ params }: Props) {
 
     return (
         <ProtectedRoute>
-            <main className="flex flex-col gap-6 w-full min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
-                <ProductDetailsView product={product} />
-            </main>
+            <ProductDetailsView product={product} />
         </ProtectedRoute>
     );
 }

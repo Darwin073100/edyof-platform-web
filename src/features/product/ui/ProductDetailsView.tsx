@@ -22,6 +22,7 @@ import {
 } from 'react-icons/tb';
 import { UpdateProductModal } from './UpdateProductModal';
 import { useUpdateProductModal } from '../hooks';
+import { BreadcrumbItem, TemplateHeader } from '@/ui/components/templates/TemplateHeader';
 
 interface Props {
     product: ProductEntity;
@@ -45,32 +46,22 @@ export function ProductDetailsView({ product }: Props) {
         // Agregar item de inventario para inventario
     };
 
-    const breadcrumbItems = [
+    const breadcrumbItems: BreadcrumbItem[] = [
         { label: 'Productos', href: '/products' },
         { label: product.name }
     ];
 
     return (
-        <div className="max-w-7xl mx-auto p-6 space-y-6">
-            {/* Breadcrumb */}
-            <Breadcrumb items={breadcrumbItems} />
-
-            {/* Header con título y acciones */}
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">{product.name}</h1>
-                    <p className="text-gray-600 mt-1">Detalle del producto</p>
-                </div>
-                <div className="flex gap-2">
-                    <ActionButton variant="edit" size="md" onClick={()=> handleOpenUpdateProductModal(product)}>
-                        <HiPencil className="w-4 h-4" />
-                        Editar
-                    </ActionButton>
-                    <ActionButton variant="delete" size="md">
-                        <HiTrash className="w-4 h-4" />
-                        Eliminar
-                    </ActionButton>
-                </div>
+        <TemplateHeader title={product.name} detail='Detalles del producto' breadcrumbItems={breadcrumbItems}>
+                        <div className="flex gap-2">
+                <ActionButton variant="edit" size="md" onClick={()=> handleOpenUpdateProductModal(product)}>
+                    <HiPencil className="w-4 h-4" />
+                    Editar
+                </ActionButton>
+                <ActionButton variant="delete" size="md">
+                    <HiTrash className="w-4 h-4" />
+                    Eliminar
+                </ActionButton>
             </div>
             <UpdateProductModal/>
             {/* Información del producto */}
@@ -351,6 +342,6 @@ export function ProductDetailsView({ product }: Props) {
                     </div>
                 )}
             </div>
-        </div>
+        </TemplateHeader>
     );
 }
