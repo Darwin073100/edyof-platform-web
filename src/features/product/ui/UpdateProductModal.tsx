@@ -74,7 +74,7 @@ const UpdateProductModal = () => {
 
     return (
         <Modal isOpen={isOpenProductModal} onClose={handleCloseUpdateProductModal}>
-            <div className='w-full max-w-2xl max-h-[90vh] mx-4 text-gray-700 bg-white rounded-lg shadow-xl overflow-hidden flex flex-col'>
+            <div className='w-full max-w-2xl max-h-[90dvh] mx-4 text-gray-700 bg-white rounded-lg shadow-xl overflow-hidden flex flex-col'>
                 {/* Header fijo */}
                 <div className="flex justify-between items-center p-6 border-b border-gray-200 bg-white">
                     <h2 className="text-lg font-semibold text-gray-900">
